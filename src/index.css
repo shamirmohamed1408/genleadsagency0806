@@ -1,0 +1,110 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Tech-Noir Sophistication Design System */
+    --background: 150 4% 13%;
+    --foreground: 0 0% 100%;
+
+    --card: 150 4% 16%;
+    --card-foreground: 0 0% 100%;
+
+    --popover: 150 4% 16%;
+    --popover-foreground: 0 0% 100%;
+
+    --primary: 43 63% 61%;
+    --primary-foreground: 150 4% 13%;
+
+    --secondary: 47 74% 74%;
+    --secondary-foreground: 150 4% 13%;
+
+    --muted: 150 4% 20%;
+    --muted-foreground: 0 0% 70%;
+
+    --accent: 47 74% 74%;
+    --accent-foreground: 150 4% 13%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 150 4% 25%;
+    --input: 150 4% 20%;
+    --ring: 43 63% 61%;
+
+    --radius: 0.5rem;
+    
+    /* Custom Design Tokens */
+    --gradient-primary: linear-gradient(135deg, hsl(43, 63%, 61%), hsl(47, 74%, 74%));
+    --gradient-dark: linear-gradient(180deg, hsl(150, 4%, 13%), hsl(150, 4%, 8%));
+    --shadow-glow: 0 0 40px hsl(43 63% 61% / 0.3);
+    --shadow-elegant: 0 10px 30px -10px hsl(0 0% 0% / 0.5);
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    --font-heading: 'Merriweather', serif;
+    --font-body: 'Inter', sans-serif;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    /* Same as root - we're using dark theme by default */
+    --background: 150 4% 13%;
+    --foreground: 0 0% 100%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+  }
+}
+
+@layer components {
+  .hover-glow {
+    @apply transition-all duration-300 hover:shadow-[0_0_20px_hsl(43_63%_61%/0.4)];
+  }
+  
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent;
+  }
+}
+
+/* Accessibility - Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
