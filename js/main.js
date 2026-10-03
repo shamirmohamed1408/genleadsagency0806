@@ -126,7 +126,7 @@ if (!hasGsap || reduce) {
   gsap.timeline({ defaults: { ease: 'expo.out' } })
     .from('.badge', { y: 20, opacity: 0, duration: 1 })
     .from(heroWords, { yPercent: 110, opacity: 0, rotate: 4, duration: 1.2, stagger: 0.06 }, '-=0.7')
-    .from('.hero .fade-up', { y: 30, opacity: 0, duration: 1, stagger: 0.12 }, '-=0.9')
+    .from('.hero .fade-up', { y: 30, duration: 1, stagger: 0.12 }, '-=0.9')
     .from('.hero-stage', { y: 60, opacity: 0, scale: 0.94, duration: 1.4 }, '-=1.2')
     .from('.stats > div', { y: 30, opacity: 0, duration: 0.9, stagger: 0.08 }, '-=1');
 
@@ -298,8 +298,10 @@ if (cvs && !reduce) {
     const n = Math.round(Math.min(90, w * h / 16000));
     pts = Array.from({ length: n }, () => ({ x: Math.random() * w, y: Math.random() * h, r: Math.random() * 1.6 + 0.4, vx: (Math.random() - 0.5) * 0.15, vy: -(Math.random() * 0.35 + 0.08), a: Math.random() * 0.5 + 0.2 }));
   };
-  size(); addEventListener('resize', size);
-  new IntersectionObserver(([e]) => { running = e.isIntersecting; if (running) requestAnimationFrame(draw); }).observe(hero);
+  // Start after the page has loaded so the particles never delay the first paint
+  const start = () => { size(); addEventListener('resize', size); new IntersectionObserver(([e]) => { running = e.isIntersecting; if (running) requestAnimationFrame(draw); }).observe(hero); };
+  const later = () => (window.requestIdleCallback ? requestIdleCallback(start, { timeout: 2000 }) : setTimeout(start, 600));
+  if (document.readyState === 'complete') later(); else addEventListener('load', later);
   function draw() {
     if (!running) return;
     ctx.clearRect(0, 0, w, h);
