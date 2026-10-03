@@ -184,16 +184,38 @@ if (!hasGsap || reduce) {
   mm.add('(min-width: 981px)', () => {
     const track = document.getElementById('systemTrack');
     const dist = () => track.scrollWidth - innerWidth;
-    const hz = gsap.to(track, { x: () => -dist(), ease: 'none',
+    const sysProgressEl = document.getElementById('sysProgress');
+    let lastPct = -1;
+    gsap.to(track, { x: () => -dist(), ease: 'none',
       scrollTrigger: { trigger: '.system', pin: true, start: 'top top', end: () => `+=${dist()}`, scrub: 0.8, invalidateOnRefresh: true,
-        onUpdate: (s) => { document.getElementById('sysProgress').style.width = `${s.progress * 100}%`; } } });
-    const inner = (card, targets, vars) => gsap.from(card.querySelectorAll(targets), { ...vars, ease: 'back.out(1.6)',
-      scrollTrigger: { trigger: card, containerAnimation: hz, start: 'left 75%', toggleActions: 'play none none reverse' } });
+        onUpdate: (s) => {
+          // Round to a whole % so the bar only gets a style write when it visibly moves,
+          // instead of on every fractional-pixel scroll update.
+          const pct = Math.round(s.progress * 100);
+          if (pct !== lastPct) { lastPct = pct; sysProgressEl.style.width = pct + '%'; }
+        } } });
+
+    // Card content reveals: was 4 ScrollTriggers tied to the pin's scrub via containerAnimation
+    // (recomputed every scroll frame against the pin's own progress — the most expensive GSAP/
+    // ScrollTrigger pattern). Replaced with a plain one-shot IntersectionObserver: each card's
+    // contents play in once, the moment the card is mostly in view, same as everywhere else on
+    // the site. No continuous per-frame cost once a card has already played.
     const sc = gsap.utils.toArray('.sys-card');
-    inner(sc[0], '.mc, .mc-meta', { y: 24, opacity: 0, scale: 0.9, stagger: 0.25, duration: 0.7 });
-    inner(sc[1], '.deal', { y: -30, opacity: 0, stagger: 0.12, duration: 0.7 });
-    inner(sc[2], '.pay-steps span, .pay-note', { scale: 0.6, opacity: 0, stagger: 0.2, duration: 0.6 });
-    inner(sc[3], '.rev', { y: 40, rotation: -4, opacity: 0, duration: 1 });
+    const specs = [
+      [sc[0], '.mc, .mc-meta', { y: 24, opacity: 0, scale: 0.9, stagger: 0.25, duration: 0.7 }],
+      [sc[1], '.deal', { y: -30, opacity: 0, stagger: 0.12, duration: 0.7 }],
+      [sc[2], '.pay-steps span, .pay-note', { scale: 0.6, opacity: 0, stagger: 0.2, duration: 0.6 }],
+      [sc[3], '.rev', { y: 40, rotation: -4, opacity: 0, duration: 1 }],
+    ];
+    const cardIO = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (!e.isIntersecting) return;
+        const spec = specs.find(([card]) => card === e.target);
+        if (spec) gsap.from(spec[0].querySelectorAll(spec[1]), { ...spec[2], ease: 'back.out(1.6)' });
+        cardIO.unobserve(e.target);
+      });
+    }, { threshold: 0.55 });
+    specs.forEach(([card]) => cardIO.observe(card));
   });
 
   // Industries: cards scatter, line up, form a circle, then fan into an arc as you scroll
@@ -244,8 +266,10 @@ if (!hasGsap || reduce) {
       if (on && !spinning) { spinning = true; offset = 0; gsap.ticker.add(spin); }
       if (!on && spinning) { spinning = false; gsap.ticker.remove(spin); }
     });
-    const onMove = (e) => gsap.to('.morph-cards', { x: (e.clientX / innerWidth - 0.5) * 60, duration: 1.2, ease: 'power3.out' });
-    box.addEventListener('mousemove', onMove);
+    // quickTo reuses one tween instead of creating a new one on every mousemove event
+    const moveX = gsap.quickTo('.morph-cards', 'x', { duration: 1.2, ease: 'power3.out' });
+    const onMove = (e) => moveX((e.clientX / innerWidth - 0.5) * 60);
+    box.addEventListener('mousemove', onMove, { passive: true });
     return () => box.removeEventListener('mousemove', onMove);
   });
 
@@ -253,11 +277,34 @@ if (!hasGsap || reduce) {
   gsap.from('.booking-wrap', { clipPath: 'inset(12% 12% 12% 12% round 40px)', duration: 1.4, ease: 'expo.out',
     scrollTrigger: { trigger: '.booking-wrap', start: 'top 85%' } });
 
-  // How it works: line draws and steps light up
+  // How it works: line draws and steps light up + rise into place.
+  // Was 5 separate scrubbed ScrollTriggers all watching the same '.flow' element every
+  // scroll pixel; merged into 1 trigger, with the original per-element timings preserved
+  // exactly by remapping each one's own start/end viewport-% into the shared progress range.
   const steps = [...document.querySelectorAll('.step')];
-  gsap.to('#flowPath', { strokeDashoffset: 0, ease: 'none',
-    scrollTrigger: { trigger: '.flow', start: 'top 75%', end: 'top 30%', scrub: true,
-      onUpdate: (s) => steps.forEach((el, i) => el.classList.toggle('lit', s.progress >= i / (steps.length - 1) - 0.02)) } });
+  const stepY = steps.map((el) => gsap.quickSetter(el, 'y', 'px'));
+  const flowPathEl = document.getElementById('flowPath');
+  const pathLen = flowPathEl.getTotalLength ? flowPathEl.getTotalLength() : 1000;
+  gsap.set(flowPathEl, { strokeDasharray: pathLen, strokeDashoffset: pathLen });
+  const flowOffset = gsap.quickSetter(flowPathEl, 'strokeDashoffset', 'px');
+
+  const OVERALL_START = 95, OVERALL_END = 30; // widest union of every original range (step0 start -> line end)
+  const span = OVERALL_START - OVERALL_END;
+  const pctToLocal = (pct) => (OVERALL_START - pct) / span;
+  const lineRange = [pctToLocal(75), pctToLocal(30)]; // original line-draw trigger: top 75% -> top 30%
+  const stepEndLocal = pctToLocal(45); // every step trigger originally ended at top 45%
+  const stepStartLocal = steps.map((_, i) => pctToLocal(95 - i * 4)); // step i started at top (95-4i)%
+  const remap = (p, a, b) => gsap.utils.clamp(0, 1, (p - a) / (b - a));
+
+  ScrollTrigger.create({ trigger: '.flow', start: `top ${OVERALL_START}%`, end: `top ${OVERALL_END}%`, scrub: true,
+    onUpdate: (s) => {
+      const lineProgress = remap(s.progress, lineRange[0], lineRange[1]);
+      flowOffset(pathLen * (1 - lineProgress));
+      steps.forEach((el, i) => {
+        el.classList.toggle('lit', lineProgress >= i / (steps.length - 1) - 0.02);
+        stepY[i](60 * (1 - remap(s.progress, stepStartLocal[i], stepEndLocal)));
+      });
+    } });
 
   // Booking card floats in with depth
   gsap.from('.booking', { y: 80, rotateX: 12, opacity: 0, duration: 1.4, ease: 'expo.out', transformPerspective: 1000,
@@ -359,11 +406,19 @@ if (spot && fine) {
 if (hasGsap && !reduce) {
   gsap.to('#scrollProg', { scaleX: 1, ease: 'none', scrollTrigger: { start: 0, end: 'max', scrub: 0.3 } });
 
-  // Hero: content and phone separate in depth as you scroll away
-  const heroST = { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true };
-  gsap.to('.hero-copy', { y: 140, opacity: 0.2, ease: 'none', scrollTrigger: heroST });
-  gsap.to('.hero-stage', { y: -60, scale: 0.94, ease: 'none', scrollTrigger: heroST });
-  gsap.to('.hero .aurora', { scale: 1.25, ease: 'none', scrollTrigger: heroST });
+  // Hero: content and phone separate in depth as you scroll away (1 trigger instead of 3,
+  // raw quickSetters instead of tweens so each scroll frame only writes style, no tween overhead)
+  (() => {
+    const copyY = gsap.quickSetter('.hero-copy', 'y', 'px'), copyO = gsap.quickSetter('.hero-copy', 'opacity');
+    const stageY = gsap.quickSetter('.hero-stage', 'y', 'px'), stageS = gsap.quickSetter('.hero-stage', 'scale');
+    const auroraS = gsap.quickSetter('.hero .aurora', 'scale');
+    ScrollTrigger.create({ trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true,
+      onUpdate: (s) => {
+        copyY(140 * s.progress); copyO(1 - s.progress * 0.8);
+        stageY(-60 * s.progress); stageS(1 - 0.06 * s.progress);
+        auroraS(1 + 0.25 * s.progress);
+      } });
+  })();
 
   // Video poster drifts inside its frame
   gsap.fromTo('.video-poster .aurora', { yPercent: -10, scale: 1.2 }, { yPercent: 10, scale: 1.2, ease: 'none',
@@ -375,14 +430,14 @@ if (hasGsap && !reduce) {
     gsap.from(el, { x: -30, opacity: 0, duration: 1, ease: 'expo.out', scrollTrigger: { trigger: el, start: 'top 90%' } });
   });
 
-  // How it works steps rise in sequence
-  gsap.utils.toArray('.step').forEach((s, i) => gsap.fromTo(s, { y: 60 }, { y: 0, ease: 'none',
-    scrollTrigger: { trigger: '.flow', start: `top ${95 - i * 4}%`, end: 'top 45%', scrub: true } }));
+  // (step rise is already handled above, merged into the single '.flow' trigger)
 
-  // Audit: copy and booking card move at different speeds
+  // Audit: copy and booking card move at different speeds (1 trigger instead of 2)
   gsap.matchMedia().add('(min-width: 701px)', () => {
-    gsap.fromTo('.audit-copy', { y: 60 }, { y: -30, ease: 'none', scrollTrigger: { trigger: '#audit', start: 'top bottom', end: 'bottom top', scrub: true } });
-    gsap.fromTo('.booking-wrap', { y: 120 }, { y: -60, ease: 'none', scrollTrigger: { trigger: '#audit', start: 'top bottom', end: 'bottom top', scrub: true } });
+    const copyY = gsap.quickSetter('.audit-copy', 'y', 'px');
+    const bookY = gsap.quickSetter('.booking-wrap', 'y', 'px');
+    ScrollTrigger.create({ trigger: '#audit', start: 'top bottom', end: 'bottom top', scrub: true,
+      onUpdate: (s) => { copyY(60 - 90 * s.progress); bookY(120 - 180 * s.progress); } });
   });
 
   // FAQ rows cascade in
