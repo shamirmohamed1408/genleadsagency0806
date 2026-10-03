@@ -3,15 +3,30 @@ const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const fine = matchMedia('(pointer: fine)').matches;
 
 const nav = document.getElementById('nav');
+let navScrolled = null;
 const updateNav = () => {
-  nav.classList.toggle('scrolled', scrollY > 20);
-  nav.style.pointerEvents = 'none';
-  const el = document.elementFromPoint(innerWidth / 2, 80);
-  nav.style.pointerEvents = '';
-  nav.classList.toggle('on-dark', !!(el && el.closest('.dark')));
+  const s = scrollY > 20;
+  if (s !== navScrolled) { navScrolled = s; nav.classList.toggle('scrolled', s); }
 };
 addEventListener('scroll', updateNav, { passive: true });
 updateNav();
+// Dark-section detection without hit-testing: watch a 2px line just under the nav bar
+(() => {
+  const under = new Set();
+  let io;
+  const watch = () => {
+    if (io) io.disconnect();
+    under.clear();
+    io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => (e.isIntersecting ? under.add(e.target) : under.delete(e.target)));
+      nav.classList.toggle('on-dark', under.size > 0);
+    }, { rootMargin: `-79px 0px -${Math.max(0, innerHeight - 81)}px 0px` });
+    document.querySelectorAll('.dark').forEach((el) => io.observe(el));
+  };
+  watch();
+  let t;
+  addEventListener('resize', () => { clearTimeout(t); t = setTimeout(watch, 200); });
+})();
 
 if (window.gsap && window.ScrollTrigger && !reduce) {
   gsap.registerPlugin(ScrollTrigger);
@@ -46,8 +61,9 @@ if (fine && !reduce) {
   document.addEventListener('mouseleave', () => document.documentElement.classList.remove('has-cursor'));
   addEventListener('mousedown', () => ring.classList.add('down'));
   addEventListener('mouseup', () => ring.classList.remove('down'));
-  const loop = () => { rx += (mx - rx) * 0.16; ry += (my - ry) * 0.16; ring.style.transform = `translate(${rx}px, ${ry}px)`; requestAnimationFrame(loop); };
-  loop();
+  let looping = false;
+  const loop = () => { rx += (mx - rx) * 0.16; ry += (my - ry) * 0.16; ring.style.transform = `translate(${rx}px, ${ry}px)`; if (Math.abs(mx - rx) > 0.2 || Math.abs(my - ry) > 0.2) requestAnimationFrame(loop); else looping = false; };
+  addEventListener('mousemove', () => { if (!looping) { looping = true; requestAnimationFrame(loop); } }, { passive: true });
   const state = (el) => {
     if (!el) return;
     const dk = !!el.closest('.dark') && !el.closest('.btn-light');
@@ -56,7 +72,13 @@ if (fine && !reduce) {
     ring.classList.toggle('hover', link); dot.classList.toggle('hide', link);
   };
   document.addEventListener('mouseover', (e) => state(e.target));
-  addEventListener('scroll', () => requestAnimationFrame(() => state(document.elementFromPoint(mx, my))), { passive: true });
+  let lastHit = 0, hitTimer;
+  const hit = () => { lastHit = performance.now(); state(document.elementFromPoint(mx, my)); };
+  addEventListener('scroll', () => {
+    if (!document.documentElement.classList.contains('has-cursor')) return;
+    clearTimeout(hitTimer); hitTimer = setTimeout(hit, 120);
+    if (performance.now() - lastHit > 250) hit();
+  }, { passive: true });
 }
 
 // Rotating headline line

@@ -50,15 +50,30 @@ if (morphCards) {
 
 // Nav: solid on scroll, dark variant over dark sections
 const nav = document.getElementById('nav');
+let navScrolled = null;
 const updateNav = () => {
-  nav.classList.toggle('scrolled', scrollY > 20);
-  nav.style.pointerEvents = 'none';
-  const el = document.elementFromPoint(innerWidth / 2, 80);
-  nav.style.pointerEvents = '';
-  nav.classList.toggle('on-dark', !!(el && el.closest('.dark')));
+  const s = scrollY > 20;
+  if (s !== navScrolled) { navScrolled = s; nav.classList.toggle('scrolled', s); }
 };
 addEventListener('scroll', updateNav, { passive: true });
 updateNav();
+// Dark-section detection without hit-testing: watch a 2px line just under the nav bar
+(() => {
+  const under = new Set();
+  let io;
+  const watch = () => {
+    if (io) io.disconnect();
+    under.clear();
+    io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => (e.isIntersecting ? under.add(e.target) : under.delete(e.target)));
+      nav.classList.toggle('on-dark', under.size > 0);
+    }, { rootMargin: `-79px 0px -${Math.max(0, innerHeight - 81)}px 0px` });
+    document.querySelectorAll('.dark').forEach((el) => io.observe(el));
+  };
+  watch();
+  let t;
+  addEventListener('resize', () => { clearTimeout(t); t = setTimeout(watch, 200); });
+})();
 
 // Hero chat: messages arrive one by one, then loop
 const stage = document.getElementById('stage');
@@ -211,9 +226,11 @@ if (!hasGsap || reduce) {
       .to({}, { duration: 0.3 });
 
     // Once the arc has formed, keep the cards travelling around it like a slow wheel
-    let offset = 0, spinning = false;
+    let offset = 0, spinning = false, visible = false;
+    new IntersectionObserver(([e]) => { visible = e.isIntersecting; }).observe(box);
     const setters = cards.map((c) => ({ x: gsap.quickSetter(c, 'x', 'px'), y: gsap.quickSetter(c, 'y', 'px'), r: gsap.quickSetter(c, 'rotation', 'deg'), o: gsap.quickSetter(c, 'opacity') }));
     const spin = (time, dt) => {
+      if (!visible) return;
       offset = (offset + dt * 0.000018) % 1;
       cards.forEach((c, i) => {
         const t = (i / N + 0.5 / N + offset) % 1;
@@ -264,12 +281,13 @@ if (fine && !reduce) {
   document.addEventListener('mouseleave', () => document.documentElement.classList.remove('has-cursor'));
   addEventListener('mousedown', () => ring.classList.add('down'));
   addEventListener('mouseup', () => ring.classList.remove('down'));
+  let looping = false;
   const loop = () => {
     rx += (mx - rx) * 0.16; ry += (my - ry) * 0.16;
     ring.style.transform = `translate(${rx}px, ${ry}px)`;
-    requestAnimationFrame(loop);
+    if (Math.abs(mx - rx) > 0.2 || Math.abs(my - ry) > 0.2) requestAnimationFrame(loop); else looping = false;
   };
-  loop();
+  addEventListener('mousemove', () => { if (!looping) { looping = true; requestAnimationFrame(loop); } }, { passive: true });
   const state = (el) => {
     if (!el) return;
     const dk = !!el.closest('.dark, .video, .booking-wrap') && !el.closest('.btn-light');
@@ -281,10 +299,12 @@ if (fine && !reduce) {
     else if (pinned && el.closest('.sys-card')) { label.textContent = 'Scroll'; ring.classList.add('label'); dot.classList.add('hide'); }
   };
   document.addEventListener('mouseover', (ev) => state(ev.target));
-  let queued = false;
+  let lastHit = 0, hitTimer;
+  const hit = () => { lastHit = performance.now(); state(document.elementFromPoint(mx, my)); };
   addEventListener('scroll', () => {
-    if (queued) return; queued = true;
-    requestAnimationFrame(() => { queued = false; state(document.elementFromPoint(mx, my)); });
+    if (!document.documentElement.classList.contains('has-cursor')) return;
+    clearTimeout(hitTimer); hitTimer = setTimeout(hit, 120);
+    if (performance.now() - lastHit > 250) hit();
   }, { passive: true });
 }
 
@@ -295,7 +315,7 @@ if (cvs && !reduce) {
   const hero = document.querySelector('.hero');
   let w, h, pts = [], running = true;
   const size = () => {
-    const dpr = Math.min(devicePixelRatio || 1, 2);
+    const dpr = Math.min(devicePixelRatio || 1, 1.5);
     w = hero.clientWidth; h = hero.clientHeight;
     cvs.width = w * dpr; cvs.height = h * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     const n = Math.round(Math.min(90, w * h / 16000));
@@ -315,8 +335,11 @@ if (cvs && !reduce) {
       ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
       ctx.fillStyle = `rgba(150, 240, 196, ${p.a})`; ctx.fill();
     }
+    ctx.lineWidth = 0.6;
     for (let i = 0; i < pts.length; i++) for (let k = i + 1; k < pts.length; k++) {
-      const dx = pts[i].x - pts[k].x, dy = pts[i].y - pts[k].y, d = dx * dx + dy * dy;
+      const dx = pts[i].x - pts[k].x; if (dx > 95 || dx < -95) continue;
+      const dy = pts[i].y - pts[k].y; if (dy > 95 || dy < -95) continue;
+      const d = dx * dx + dy * dy;
       if (d < 9000) { ctx.strokeStyle = `rgba(94, 234, 168, ${0.12 * (1 - d / 9000)})`; ctx.lineWidth = 0.6; ctx.beginPath(); ctx.moveTo(pts[i].x, pts[i].y); ctx.lineTo(pts[k].x, pts[k].y); ctx.stroke(); }
     }
     requestAnimationFrame(draw);
@@ -328,8 +351,7 @@ const spot = document.getElementById('heroSpot');
 if (spot && fine) {
   document.querySelector('.hero').addEventListener('mousemove', (e) => {
     const r = e.currentTarget.getBoundingClientRect();
-    spot.style.setProperty('--sx', `${e.clientX - r.left}px`);
-    spot.style.setProperty('--sy', `${e.clientY - r.top}px`);
+    spot.style.transform = `translate3d(${e.clientX - r.left - 600}px, ${e.clientY - r.top - 600}px, 0)`;
   });
 }
 

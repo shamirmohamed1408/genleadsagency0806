@@ -5,15 +5,14 @@
     const spot = sec.querySelector(':scope > .fx-spot');
     if (spot) sec.addEventListener('mousemove', (e) => {
       const r = sec.getBoundingClientRect();
-      spot.style.setProperty('--sx', `${e.clientX - r.left}px`);
-      spot.style.setProperty('--sy', `${e.clientY - r.top}px`);
+      spot.style.transform = `translate3d(${e.clientX - r.left - 560}px, ${e.clientY - r.top - 560}px, 0)`;
     });
     const cvs = sec.querySelector(':scope > .fx-particles');
     if (!cvs || calm) return;
     const ctx = cvs.getContext('2d');
     let w, h, pts = [], running = false;
     const size = () => {
-      const dpr = Math.min(devicePixelRatio || 1, 2);
+      const dpr = Math.min(devicePixelRatio || 1, 1.5);
       w = sec.clientWidth; h = sec.clientHeight;
       cvs.width = w * dpr; cvs.height = h * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       pts = Array.from({ length: Math.round(Math.min(80, w * h / 16000)) }, () => ({ x: Math.random() * w, y: Math.random() * h, r: Math.random() * 1.6 + 0.4, vx: (Math.random() - 0.5) * 0.15, vy: -(Math.random() * 0.35 + 0.08), a: Math.random() * 0.5 + 0.2 }));
@@ -28,7 +27,9 @@
         ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fillStyle = `rgba(150,240,196,${p.a})`; ctx.fill();
       }
       for (let i = 0; i < pts.length; i++) for (let k = i + 1; k < pts.length; k++) {
-        const dx = pts[i].x - pts[k].x, dy = pts[i].y - pts[k].y, d = dx * dx + dy * dy;
+        const dx = pts[i].x - pts[k].x; if (dx > 95 || dx < -95) continue;
+        const dy = pts[i].y - pts[k].y; if (dy > 95 || dy < -95) continue;
+        const d = dx * dx + dy * dy;
         if (d < 9000) { ctx.strokeStyle = `rgba(94,234,168,${0.12 * (1 - d / 9000)})`; ctx.lineWidth = 0.6; ctx.beginPath(); ctx.moveTo(pts[i].x, pts[i].y); ctx.lineTo(pts[k].x, pts[k].y); ctx.stroke(); }
       }
       requestAnimationFrame(draw);
@@ -72,7 +73,7 @@
     const step = (t) => {
       n++;
       if (t - t0 < 1500) requestAnimationFrame(step);
-      else if (n / ((t - t0) / 1000) < 45) goLite();
+      else if (n / ((t - t0) / 1000) < 30) goLite();
     };
     requestAnimationFrame(step);
   };
@@ -81,7 +82,9 @@
 
   // Lag shows up while scrolling, so also time the frames of the first real scrolls
   const deltas = [];
-  let last = 0, sampling = false, done = false;
+  let last = 0, sampling = false, done = false, ready = false;
+  addEventListener('load', () => setTimeout(() => { ready = true; }, 2000));
+  if (document.readyState === 'complete') setTimeout(() => { ready = true; }, 2000);
   const sample = (t) => {
     if (last) deltas.push(t - last);
     last = t;
@@ -91,11 +94,11 @@
       const sorted = deltas.slice().sort((a, b) => a - b);
       const median = sorted[Math.floor(sorted.length / 2)];
       const slow = deltas.filter((d) => d > 34).length;
-      if (median > 22 || slow > 12) goLite();
+      if (median > 30 || slow > 20) goLite();
     }
   };
   addEventListener('scroll', () => {
-    if (done || sampling || root.classList.contains('lite')) return;
+    if (!ready || done || sampling || root.classList.contains('lite')) return;
     sampling = true;
     requestAnimationFrame(sample);
   }, { passive: true });
