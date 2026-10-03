@@ -337,6 +337,8 @@ h1 em, h2 em { color: var(--emerald); }
   .system { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding-block: 104px 48px; }
   .system .progress { margin-bottom: 40px; }
   .system .sys-note { margin-top: 32px; }
+  .system-viewport { overflow: hidden; }
+  .system-track { position: relative; }
 }
 
 /* ---------- v4 ---------- */

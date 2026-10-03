@@ -136,21 +136,39 @@ if (!hasGsap || reduce) {
     once: true,
   });
 
-  // System: pinned horizontal showcase on desktop
+  // System: on desktop one card at a time, advancing every 3 seconds
   const mm = gsap.matchMedia();
   mm.add('(min-width: 981px)', () => {
     const track = document.getElementById('systemTrack');
-    const dist = () => track.scrollWidth - innerWidth;
-    const hz = gsap.to(track, { x: () => -dist(), ease: 'none',
-      scrollTrigger: { trigger: '.system', pin: true, start: 'top top', end: () => `+=${dist()}`, scrub: 0.8, invalidateOnRefresh: true,
-        onUpdate: (s) => { document.getElementById('sysProgress').style.width = `${s.progress * 100}%`; } } });
-    const inner = (card, targets, vars) => gsap.from(card.querySelectorAll(targets), { ...vars, ease: 'back.out(1.6)',
-      scrollTrigger: { trigger: card, containerAnimation: hz, start: 'left 75%', toggleActions: 'play none none reverse' } });
-    const sc = gsap.utils.toArray('.sys-card');
-    inner(sc[0], '.mc, .mc-meta', { y: 24, opacity: 0, scale: 0.9, stagger: 0.25, duration: 0.7 });
-    inner(sc[1], '.deal', { y: -30, opacity: 0, stagger: 0.12, duration: 0.7 });
-    inner(sc[2], '.pay-steps span, .pay-note', { scale: 0.6, opacity: 0, stagger: 0.2, duration: 0.6 });
-    inner(sc[3], '.rev', { y: 40, rotation: -4, opacity: 0, duration: 1 });
+    const vp = track.parentElement;
+    const bar = document.getElementById('sysProgress');
+    const cards = gsap.utils.toArray('.sys-card');
+    const reveals = [
+      (c) => gsap.from(c.querySelectorAll('.mc, .mc-meta'), { y: 24, opacity: 0, scale: 0.9, stagger: 0.25, duration: 0.7, ease: 'back.out(1.6)' }),
+      (c) => gsap.from(c.querySelectorAll('.deal'), { y: -30, opacity: 0, stagger: 0.12, duration: 0.7, ease: 'back.out(1.6)' }),
+      (c) => gsap.from(c.querySelectorAll('.pay-steps span, .pay-note'), { scale: 0.6, opacity: 0, stagger: 0.2, duration: 0.6, ease: 'back.out(1.6)' }),
+      (c) => gsap.from(c.querySelectorAll('.rev'), { y: 40, rotation: -4, opacity: 0, duration: 1, ease: 'back.out(1.6)' }),
+    ];
+    let i = 0;
+    let timer = null;
+    const show = (n) => {
+      i = n;
+      const c = cards[i];
+      gsap.to(track, { x: vp.clientWidth / 2 - (c.offsetLeft + c.offsetWidth / 2), duration: 1, ease: 'expo.inOut' });
+      gsap.to(bar, { width: `${((i + 1) / cards.length) * 100}%`, duration: 0.6 });
+      reveals[i](c);
+    };
+    const start = () => { if (!timer) timer = setInterval(() => show((i + 1) % cards.length), 3000); };
+    const stop = () => { clearInterval(timer); timer = null; };
+    const io = new IntersectionObserver(([e]) => (e.isIntersecting ? start() : stop()), { threshold: 0.4 });
+    io.observe(vp);
+    show(0);
+    return () => {
+      stop();
+      io.disconnect();
+      gsap.killTweensOf([track, bar]);
+      gsap.set([track, bar], { clearProps: 'all' });
+    };
   });
 
   // Video and booking: clip-path reveal
@@ -196,10 +214,8 @@ if (fine && !reduce) {
     const dk = !!el.closest('.dark, .video, .booking-wrap') && !el.closest('.btn-light');
     dot.classList.toggle('dk', dk); ring.classList.toggle('dk', dk);
     ring.classList.remove('hover', 'label'); dot.classList.remove('hide');
-    const pinned = innerWidth > 980;
     if (el.closest('#videoBox')) { label.textContent = 'Play'; ring.classList.add('label'); dot.classList.add('hide'); }
     else if (el.closest('a, button, summary')) { ring.classList.add('hover'); dot.classList.add('hide'); }
-    else if (pinned && el.closest('.sys-card')) { label.textContent = 'Scroll'; ring.classList.add('label'); dot.classList.add('hide'); }
   };
   document.addEventListener('mouseover', (ev) => state(ev.target));
   let queued = false;
