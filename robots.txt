@@ -15,4 +15,6 @@ Allow: /
 User-agent: Google-Extended
 Allow: /
 
+Disallow: /preview-
+
 Sitemap: https://www.genleadsagency.com/sitemap.xml
