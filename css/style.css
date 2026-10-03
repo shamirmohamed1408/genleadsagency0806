@@ -573,3 +573,14 @@ h2 { margin-bottom: clamp(36px, 4.5vw, 60px); }
 @media (prefers-reduced-motion: reduce) { .bk-book.ready { animation: none; } }
 .beam { left: -40%; will-change: transform; }
 .msg time, .wa-meta { color: #5F6B66; }
+
+/* Lighter effect set for weaker machines (html.lite) and paused off-screen dark sections */
+html.lite .aurora i, html.lite .bg-fx i, .paused .aurora i, .paused .beam, .paused .grid-lines { animation-play-state: paused; }
+html.lite .hero-particles, html.lite .fx-particles, html.lite .beam, html.lite .grain, html.lite .hero-spot, html.lite .fx-spot { display: none !important; }
+html.lite .grid-lines { animation: none; }
+html.lite *, html.lite *::before, html.lite *::after { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+html.lite .nav.scrolled { background: rgba(255,255,255,.97); }
+html.lite .nav.scrolled.on-dark { background: rgba(5,35,26,.97); }
+html.lite .glass { background: rgba(6,40,29,.94); }
+html.lite .inbox, html.lite .pipe, html.lite .badge, html.lite .stats, html.lite .btn-ghost, html.lite .play { background-color: rgba(10,58,40,.92); }
+html.lite .float-card { background: #fff; }

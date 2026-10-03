@@ -108,10 +108,13 @@ if (!hasGsap || reduce) {
   if (window.SplitText) gsap.registerPlugin(SplitText);
 
   // Smooth scroll, synced with ScrollTrigger
-  if (window.Lenis) {
+  if (window.Lenis && window.GL_PERF && GL_PERF.glide) {
     const lenis = new Lenis({ duration: 1.15, easing: (t) => 1 - Math.pow(1 - t, 4) });
+    window.glLenis = lenis;
     lenis.on('scroll', ScrollTrigger.update);
-    gsap.ticker.add((t) => lenis.raf(t * 1000));
+    const raf = (t) => lenis.raf(t * 1000);
+    gsap.ticker.add(raf);
+    lenis.on('destroy', () => gsap.ticker.remove(raf));
     gsap.ticker.lagSmoothing(0);
     document.querySelectorAll('a[href^="#"]').forEach((a) => a.addEventListener('click', (e) => {
       const id = a.getAttribute('href');
@@ -303,7 +306,7 @@ if (cvs && !reduce) {
   const later = () => (window.requestIdleCallback ? requestIdleCallback(start, { timeout: 2000 }) : setTimeout(start, 600));
   if (document.readyState === 'complete') later(); else addEventListener('load', later);
   function draw() {
-    if (!running) return;
+    if (!running || document.documentElement.classList.contains('lite')) { running = false; return; }
     ctx.clearRect(0, 0, w, h);
     for (const p of pts) {
       p.x += p.vx; p.y += p.vy;

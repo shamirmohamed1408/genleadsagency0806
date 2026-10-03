@@ -15,10 +15,13 @@ updateNav();
 
 if (window.gsap && window.ScrollTrigger && !reduce) {
   gsap.registerPlugin(ScrollTrigger);
-  if (window.Lenis) {
+  if (window.Lenis && window.GL_PERF && GL_PERF.glide) {
     const lenis = new Lenis({ duration: 1.15, easing: (t) => 1 - Math.pow(1 - t, 4) });
+    window.glLenis = lenis;
     lenis.on('scroll', ScrollTrigger.update);
-    gsap.ticker.add((t) => lenis.raf(t * 1000));
+    const raf = (t) => lenis.raf(t * 1000);
+    gsap.ticker.add(raf);
+    lenis.on('destroy', () => gsap.ticker.remove(raf));
     gsap.ticker.lagSmoothing(0);
   }
   gsap.to('#scrollProg', { scaleX: 1, ease: 'none', scrollTrigger: { start: 0, end: 'max', scrub: 0.3 } });
