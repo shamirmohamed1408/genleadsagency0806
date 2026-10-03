@@ -119,7 +119,7 @@ if (!hasGsap || reduce) {
     }));
   }
 
-  const splitWords = (el) => (window.SplitText ? new SplitText(el, { type: 'words', wordsClass: 'word' }).words : [el]);
+  const splitWords = (el) => (window.SplitText ? new SplitText(el, { type: 'words', wordsClass: 'word', aria: 'none' }).words : [el]);
 
   // Hero intro
   const heroWords = [...splitWords(document.querySelector('.h1-static')), document.querySelector('.rotator')];
