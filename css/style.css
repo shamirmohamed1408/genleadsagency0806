@@ -447,7 +447,8 @@ main, .footer { position: relative; }
 .hero:hover .hero-spot { opacity: 1; }
 .beam { position: absolute; top: -20%; left: -30%; width: 40%; height: 160%; z-index: -1; pointer-events: none; opacity: .5;
   background: linear-gradient(90deg, transparent, rgba(184,245,214,.07), transparent); transform: rotate(18deg); animation: beam 9s ease-in-out infinite; }
-@keyframes beam { 0% { left: -40%; } 60%, 100% { left: 120%; } }
+/* Moves with transform (no layout work, so no layout shift); same path as the old left: -40% -> 120% */
+@keyframes beam { 0% { transform: translateX(-25%) rotate(18deg); } 60%, 100% { transform: translateX(375%) rotate(18deg); } }
 
 /* Scroll progress line under the nav */
 .scroll-progress { position: absolute; left: 0; bottom: 0; height: 2px; width: 100%; background: linear-gradient(90deg, var(--emerald), var(--mint)); transform-origin: 0 50%; transform: scaleX(0); }
