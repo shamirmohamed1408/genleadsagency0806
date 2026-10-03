@@ -1,6 +1,5 @@
 // Shared behaviour for inner pages (service, about, contact, legal)
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const fine = matchMedia('(pointer: fine)').matches;
 
 const nav = document.getElementById('nav');
 const updateNav = () => {
@@ -33,29 +32,6 @@ if (window.gsap && window.ScrollTrigger && !reduce) {
   addEventListener('load', () => ScrollTrigger.refresh());
 }
 
-// Custom cursor (mouse only)
-if (fine && !reduce) {
-  const dot = document.createElement('div'); dot.className = 'cursor-dot';
-  const ring = document.createElement('div'); ring.className = 'cursor-ring'; ring.innerHTML = '<span></span>';
-  document.body.append(dot, ring);
-  let mx = -100, my = -100, rx = -100, ry = -100;
-  addEventListener('mousemove', (e) => { mx = e.clientX; my = e.clientY; dot.style.transform = `translate(${mx}px, ${my}px)`; document.documentElement.classList.add('has-cursor'); });
-  document.addEventListener('mouseleave', () => document.documentElement.classList.remove('has-cursor'));
-  addEventListener('mousedown', () => ring.classList.add('down'));
-  addEventListener('mouseup', () => ring.classList.remove('down'));
-  const loop = () => { rx += (mx - rx) * 0.16; ry += (my - ry) * 0.16; ring.style.transform = `translate(${rx}px, ${ry}px)`; requestAnimationFrame(loop); };
-  loop();
-  const state = (el) => {
-    if (!el) return;
-    const dk = !!el.closest('.dark') && !el.closest('.btn-light');
-    dot.classList.toggle('dk', dk); ring.classList.toggle('dk', dk);
-    const link = !!el.closest('a, button, summary');
-    ring.classList.toggle('hover', link); dot.classList.toggle('hide', link);
-  };
-  document.addEventListener('mouseover', (e) => state(e.target));
-  addEventListener('scroll', () => requestAnimationFrame(() => state(document.elementFromPoint(mx, my))), { passive: true });
-}
-
 // Rotating headline line
 const rots = [...document.querySelectorAll('.rot')];
 if (rots.length > 1 && !reduce) {
@@ -68,10 +44,3 @@ if (rots.length > 1 && !reduce) {
     rots[cur].classList.add('on');
   }, 2600);
 }
-
-// Card spotlight follows the cursor
-document.querySelectorAll('.spot').forEach((card) => card.addEventListener('pointermove', (e) => {
-  const r = card.getBoundingClientRect();
-  card.style.setProperty('--mx', `${e.clientX - r.left}px`);
-  card.style.setProperty('--my', `${e.clientY - r.top}px`);
-}));
