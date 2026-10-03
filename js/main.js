@@ -24,26 +24,18 @@ if (rots.length && !reduce) {
 }
 
 // Industries: build cards for the scroll morph
-const INDUSTRIES = [
-  ['Real Estate', 'M3 21h18M5 21V9l7-5 7 5v12M9 21v-6h6v6'],
+const INDUSTRIES = [['Real Estate', 'M3 21h18M5 21V9l7-5 7 5v12M9 21v-6h6v6'],
   ['Property Management', 'M4 21V5h10v16M14 9h6v12M7 9h3M7 13h3M7 17h3'],
   ['Resorts', 'M3 20h18M12 4c3 3 3 7 0 10M12 4C9 7 9 11 12 14M12 14v6M5 20c0-3 3-5 7-6'],
   ['Hospitality', 'M3 18h18M5 18a7 7 0 0 1 14 0M12 8V6M10 6h4'],
   ['Clinics', 'M12 5v14M5 12h14'],
   ['Dental', 'M7 4c-2 0-3 2-3 4 0 4 2 5 2 9 0 2 1 3 2 3s1-3 2-5c1 2 1 5 2 5s2-1 2-3c0-4 2-5 2-9 0-2-1-4-3-4-2 0-2 1-4 1S9 4 7 4z'],
   ['Salons & Spas', 'M6 6a3 3 0 1 0 0 .1M6 18a3 3 0 1 0 0 .1M8.5 7.5 20 18M8.5 16.5 20 6'],
-  ['Software', 'm8 8-4 4 4 4M16 8l4 4-4 4M14 5l-4 14'],
-  ['Restaurants', 'M7 3v8a2 2 0 0 0 4 0V3M9 11v10M17 3c-2 2-2 6 0 8v10'],
-  ['E-commerce', 'M3 4h3l2 12h11l2-8H7M10 20a1 1 0 1 0 0 .1M18 20a1 1 0 1 0 0 .1'],
-  ['Education', 'm2 9 10-5 10 5-10 5zM6 11v5c3 2 9 2 12 0v-5'],
-  ['Automotive', 'M5 16h14M3 16l2-6h14l2 6v3H3zM7 19v1M17 19v1'],
-  ['Gyms & Fitness', 'M3 10v4M6 8v8M18 8v8M21 10v4M6 12h12'],
-  ['Professional Services', 'M4 8h16v11H4zM9 8V5h6v3M4 13h16'],
-];
+  ['Software', 'm8 8-4 4 4 4M16 8l4 4-4 4M14 5l-4 14'],];
 const COLORS = ['#0A7D4F', '#05231A', '#0FA968', '#1E6B8F', '#0C5A3A', '#137F6B', '#2F8F5B'];
 const morphCards = document.getElementById('morphCards');
 if (morphCards) {
-  const PHOTOS = ["real-estate","property-management","resorts","hospitality","clinics","dental","salons","software","restaurants","ecommerce","education","automotive","gyms","professional"];
+  const PHOTOS = ["real-estate","property-management","resorts","hospitality","clinics","dental","salons","software"];
   morphCards.innerHTML = INDUSTRIES.map(([name, d], i) =>
     `<div class="mcard"><img src="/images/industries/${PHOTOS[i]}.webp" alt="${name} business using GenLeads automation" width="600" height="750" loading="lazy" decoding="async"><span class="mcard-ico"><svg viewBox="0 0 24 24"><path d="${d}"/></svg></span><b>${name}</b></div>`).join('');
 }
