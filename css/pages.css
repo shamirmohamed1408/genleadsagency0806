@@ -158,3 +158,4 @@
   .pf-tl div { grid-template-columns: 18px 1fr; } .pf-tl time { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { .pc.mover { animation: none; } }
+.ba thead th:first-child { color: var(--ink); font-size: 13px; text-transform: uppercase; letter-spacing: .08em; }

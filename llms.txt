@@ -1,23 +1,29 @@
 # GenLeads
 
-> GenLeads is an AI automation agency based in Kallakurichi, Tamil Nadu, India, serving businesses in India, the UAE and worldwide. We help business owners stop losing leads and stop doing repetitive work by hand.
+> GenLeads is an AI automation agency founded by Mohamed Shamir in Kallakurichi, Tamil Nadu, India, serving businesses worldwide. We answer every lead in under 60 seconds and automate the manual work behind sales, payments and reviews, so business owners can focus on work that needs a person.
 
 ## Services
-- Speed to Lead: an AI agent replies to every WhatsApp, Instagram, email and website lead in under 60 seconds, qualifies it and books a call.
-- Custom CRM: every lead, deal and customer tracked in one pipeline built for the business.
-- Process Automation: invoices sent, payments collected and verified automatically.
-- Reputation Management: review requests sent to every happy customer; unhappy feedback routed privately.
-- Website Development: websites built with the whole lead system connected.
+- [Speed to Lead](https://www.genleadsagency.com/services/speed-to-lead): an AI agent replies to every WhatsApp, Instagram, Messenger, email and website lead in under 60 seconds, 24/7, qualifies it and books a call. Supports English, Hindi, Tamil, Arabic and most major languages.
+- [Custom CRM](https://www.genleadsagency.com/services/custom-crm): every lead, deal and customer in one pipeline built around the business's sales process, with automatic follow-ups and live reports.
+- [Process Automation](https://www.genleadsagency.com/services/process-automation): invoices created automatically, payment links sent on WhatsApp, reminders, and payment verification. Works with Razorpay, Stripe and UPI; GST and VAT ready.
+- [Reputation Management](https://www.genleadsagency.com/services/reputation-management): review requests to every customer at the right moment; 4-5 star ratings are sent to Google, lower ratings reach the owner privately; AI-drafted review replies.
+- [Website Development](https://www.genleadsagency.com/services/website-development): fast, mobile-first business websites with AI chat, WhatsApp replies, booking and CRM connected, plus SEO from day one. Live in 2 to 3 weeks.
+
+## How it works
+Free 30-minute audit on Google Meet, then system design, build, testing and launch in 7 to 10 days, followed by ongoing improvement. Details: [How it works](https://www.genleadsagency.com/how-it-works).
 
 ## Who we work with
-Real estate, property management, resorts and hospitality, clinics, dental, salons and spas, software companies, restaurants, e-commerce, education, automotive, gyms and professional services.
+Real estate, property management, resorts and hospitality, clinics and healthcare, dental, salons and spas, software companies, restaurants, e-commerce, education and coaching, automotive, gyms and professional services.
 
 ## Key pages
 - [Home](https://www.genleadsagency.com/)
 - [Book a free business audit](https://www.genleadsagency.com/audit)
+- [About](https://www.genleadsagency.com/about)
+- [FAQ](https://www.genleadsagency.com/faq)
+- [Contact](https://www.genleadsagency.com/contact)
 
 ## Contact
 - Founder: Mohamed Shamir
-- WhatsApp: +91 86674 80588
+- WhatsApp: +91 86674 80588 (instant replies, 24/7)
 - Email: shamir@genleadsagency.com
 - LinkedIn: https://www.linkedin.com/company/105060192/

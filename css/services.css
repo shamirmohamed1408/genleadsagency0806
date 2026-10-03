@@ -164,3 +164,14 @@
 @media (prefers-reduced-motion: reduce) {
   .il-step, .il-step i, .il-badge, .rl-card, .sb-page > *, .wire-lines path { animation: none; opacity: 1; }
 }
+
+/* Flow line always runs behind the icon boxes; only the contents fade in */
+.pflow::before, .pflow::after { z-index: 0; }
+.pf-node { opacity: 1; z-index: 1; }
+.pf-node span { background: #fff; }
+.pf-node span svg, .pf-node b, .pf-node small { opacity: .35; transition: opacity .6s; }
+.pflow.run .pf-node span svg, .pflow.run .pf-node b, .pflow.run .pf-node small { opacity: 1; }
+.pflow.run .pf-node:nth-child(2) > *, .pflow.run .pf-node:nth-child(2) svg { transition-delay: .5s; }
+.pflow.run .pf-node:nth-child(3) > *, .pflow.run .pf-node:nth-child(3) svg { transition-delay: 1s; }
+.pflow.run .pf-node:nth-child(4) > *, .pflow.run .pf-node:nth-child(4) svg { transition-delay: 1.5s; }
+.pflow.run .pf-node:nth-child(5) > *, .pflow.run .pf-node:nth-child(5) svg { transition-delay: 2s; }

@@ -45,7 +45,7 @@ const morphCards = document.getElementById('morphCards');
 if (morphCards) {
   const PHOTOS = ["real-estate","property-management","resorts","hospitality","clinics","dental","salons","software","restaurants","ecommerce","education","automotive","gyms","professional"];
   morphCards.innerHTML = INDUSTRIES.map(([name, d], i) =>
-    `<div class="mcard"><img src="images/industries/${PHOTOS[i]}.webp" alt="" loading="lazy" decoding="async"><span class="mcard-ico"><svg viewBox="0 0 24 24"><path d="${d}"/></svg></span><b>${name}</b></div>`).join('');
+    `<div class="mcard"><img src="/images/industries/${PHOTOS[i]}.webp" alt="${name} business using GenLeads automation" width="600" height="750" loading="lazy" decoding="async"><span class="mcard-ico"><svg viewBox="0 0 24 24"><path d="${d}"/></svg></span><b>${name}</b></div>`).join('');
 }
 
 // Nav: solid on scroll, dark variant over dark sections
@@ -366,3 +366,43 @@ if (hasGsap && !reduce) {
   gsap.from('.foot-grid > div', { y: 30, opacity: 0, stagger: 0.08, duration: 0.9, ease: 'expo.out', scrollTrigger: { trigger: '.footer', start: 'top 92%' } });
 }
 
+
+// Homepage mini booking: pick a date and time, then continue to the audit form
+(() => {
+  const cal = document.getElementById('bkCal');
+  if (!cal) return;
+  const slots = [...document.querySelectorAll('#bkSlots button')];
+  const book = document.getElementById('bkBook');
+  const note = document.getElementById('bkNoteText');
+  const month = document.getElementById('bkMonth');
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const monday = new Date(today); monday.setDate(today.getDate() - ((today.getDay() + 6) % 7));
+  let day = null, time = null;
+  cal.innerHTML = ['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d) => `<span class="dow">${d}</span>`).join('');
+  for (let i = 0; i < 14; i++) {
+    const d = new Date(monday); d.setDate(monday.getDate() + i);
+    const b = document.createElement('button');
+    b.type = 'button'; b.textContent = d.getDate();
+    b.disabled = d < today || d.getDay() === 0;
+    if (d.getTime() === today.getTime()) b.classList.add('today');
+    b.setAttribute('aria-label', d.toDateString());
+    b.addEventListener('click', () => { day = d; cal.querySelectorAll('button').forEach((x) => x.classList.toggle('sel', x === b)); update(); });
+    cal.appendChild(b);
+  }
+  const first = new Date(monday), last = new Date(monday); last.setDate(monday.getDate() + 13);
+  const mName = (d) => d.toLocaleDateString(undefined, { month: 'long' });
+  month.textContent = mName(first) === mName(last) ? `${mName(first)} ${first.getFullYear()}` : `${mName(first)} – ${mName(last)} ${last.getFullYear()}`;
+  slots.forEach((b) => b.addEventListener('click', () => { time = b.dataset.t; slots.forEach((x) => x.classList.toggle('sel', x === b)); update(); }));
+  function update() {
+    if (day && time) {
+      const label = `${day.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' })}, ${slots.find((s) => s.dataset.t === time).textContent}`;
+      note.textContent = `${label} selected. Confirm it after a few quick questions.`;
+      book.textContent = `Book ${label}`;
+      book.classList.add('ready');
+      const y = day.getFullYear(), m = String(day.getMonth() + 1).padStart(2, '0'), dd = String(day.getDate()).padStart(2, '0');
+      try { localStorage.setItem('genleads-audit-pref', JSON.stringify({ date: `${y}-${m}-${dd}`, time, label })); } catch {}
+    } else {
+      note.textContent = day ? 'Now pick a time.' : 'Pick a date and time. Reminders are sent on WhatsApp.';
+    }
+  }
+})();

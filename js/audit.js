@@ -125,7 +125,7 @@ async function submit() {
   }
   store.set(LEAD_KEY, lead);
   store.del(DRAFT_KEY);
-  location.href = 'book.html';
+  location.href = '/book';
 }
 
 loadDraft();

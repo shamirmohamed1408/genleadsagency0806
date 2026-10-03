@@ -7,6 +7,7 @@ const BOOKING_KEY = 'genleads-audit-booking';
 const read = (k) => { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } };
 const write = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
 const lead = read(LEAD_KEY) || {};
+const pref = read('genleads-audit-pref');
 const first = (lead.name || '').split(' ')[0];
 
 // Left panel: personalise from the form
@@ -16,6 +17,11 @@ if (lead.business) {
   document.getElementById('sumIndustry').textContent = lead.industry || '—';
   document.getElementById('sumFocus').textContent = (lead.problems || []).slice(0, 2).join(', ') || 'Where you are losing leads';
   document.getElementById('summary').hidden = false;
+}
+
+if (pref && pref.label) {
+  const lead2 = document.querySelector('.side-lead');
+  if (lead2) lead2.textContent = `You picked ${pref.label}. Confirm that slot on the calendar, or choose another. You will get a Google Meet link and WhatsApp confirmation straight away.`;
 }
 
 // WhatsApp fallback carries their details so nothing has to be retyped
@@ -32,7 +38,7 @@ function goConfirmed(detail) {
   const d = detail && (detail.data || detail);
   const start = d && (d.startTime || d.date || (d.booking && d.booking.startTime));
   write(BOOKING_KEY, { name: lead.name || '', business: lead.business || '', email: lead.email || '', start: start || null });
-  location.href = 'thank-you.html';
+  location.href = '/thank-you';
 }
 
 if (!CAL_LINK) {
@@ -47,7 +53,7 @@ if (!CAL_LINK) {
   Cal('init', 'audit', { origin: 'https://cal.com' });
   Cal.ns.audit('inline', {
     elementOrSelector: '#cal',
-    calLink: CAL_LINK,
+    calLink: pref && pref.date ? `${CAL_LINK}?month=${pref.date.slice(0, 7)}&date=${pref.date}` : CAL_LINK,
     layout: 'month_view',
     config: { name: lead.name || '', email: lead.email || '', notes, whatsapp: lead.whatsapp || '', attendeePhoneNumber: lead.whatsapp || '', theme: 'light' },
   });

@@ -555,3 +555,19 @@ h2 { margin-bottom: clamp(36px, 4.5vw, 60px); }
 .ft-bottom a:hover { color: var(--emerald); }
 @media (max-width: 980px) { .ft-grid { grid-template-columns: 1fr 1fr; } .ft-news { grid-column: 1 / -1; } }
 @media (max-width: 560px) { .ft-grid { grid-template-columns: 1fr 1fr; gap: 36px 20px; } .ft-grid > div:last-child { grid-column: 1 / -1; } .ft-bottom { flex-direction: column; align-items: flex-start; } }
+
+/* Homepage mini booking calendar (interactive) */
+.bk-cal button, .bk-slots button { font: inherit; border: 0; cursor: pointer; background: transparent; color: var(--ink); transition: background .2s, color .2s, box-shadow .2s, transform .2s; }
+.bk-cal button { padding: 8px 0; border-radius: 10px; font-size: 14px; font-variant-numeric: tabular-nums; }
+.bk-cal button:hover:not(:disabled) { background: var(--mint-soft); }
+.bk-cal button:disabled { color: #C3CCC7; cursor: default; }
+.bk-cal button.sel { background: var(--emerald); color: #fff; font-weight: 600; transform: scale(1.04); }
+.bk-cal button.today::after { content: ""; display: block; width: 4px; height: 4px; margin: 2px auto 0; border-radius: 50%; background: currentColor; opacity: .6; }
+.bk-slots button { font-size: 12px; padding: 10px 0; border: 1px solid var(--line); border-radius: 12px; font-variant-numeric: tabular-nums; }
+.bk-slots button:hover { border-color: var(--emerald); color: var(--emerald); }
+.bk-slots button.sel { background: var(--emerald); border-color: var(--emerald); color: #fff; font-weight: 600; }
+.bk-book { width: 100%; margin-top: 18px; }
+.bk-book.ready { animation: bkPulse 1.6s ease-in-out 2; }
+@keyframes bkPulse { 50% { box-shadow: 0 0 0 8px rgba(10,125,79,.15), 0 12px 32px -8px rgba(10,125,79,.7); } }
+.bk-confirm { margin-top: 14px; }
+@media (prefers-reduced-motion: reduce) { .bk-book.ready { animation: none; } }
