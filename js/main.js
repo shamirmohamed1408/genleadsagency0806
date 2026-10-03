@@ -24,48 +24,41 @@ if (rots.length && !reduce) {
 }
 
 // Industries: build cards for the scroll morph
-const INDUSTRIES = [['Real Estate', 'M3 21h18M5 21V9l7-5 7 5v12M9 21v-6h6v6'],
+const INDUSTRIES = [
+  ['Real Estate', 'M3 21h18M5 21V9l7-5 7 5v12M9 21v-6h6v6'],
   ['Property Management', 'M4 21V5h10v16M14 9h6v12M7 9h3M7 13h3M7 17h3'],
   ['Resorts', 'M3 20h18M12 4c3 3 3 7 0 10M12 4C9 7 9 11 12 14M12 14v6M5 20c0-3 3-5 7-6'],
   ['Hospitality', 'M3 18h18M5 18a7 7 0 0 1 14 0M12 8V6M10 6h4'],
   ['Clinics', 'M12 5v14M5 12h14'],
   ['Dental', 'M7 4c-2 0-3 2-3 4 0 4 2 5 2 9 0 2 1 3 2 3s1-3 2-5c1 2 1 5 2 5s2-1 2-3c0-4 2-5 2-9 0-2-1-4-3-4-2 0-2 1-4 1S9 4 7 4z'],
   ['Salons & Spas', 'M6 6a3 3 0 1 0 0 .1M6 18a3 3 0 1 0 0 .1M8.5 7.5 20 18M8.5 16.5 20 6'],
-  ['Software', 'm8 8-4 4 4 4M16 8l4 4-4 4M14 5l-4 14'],];
+  ['Software', 'm8 8-4 4 4 4M16 8l4 4-4 4M14 5l-4 14'],
+  ['Restaurants', 'M7 3v8a2 2 0 0 0 4 0V3M9 11v10M17 3c-2 2-2 6 0 8v10'],
+  ['E-commerce', 'M3 4h3l2 12h11l2-8H7M10 20a1 1 0 1 0 0 .1M18 20a1 1 0 1 0 0 .1'],
+  ['Education', 'm2 9 10-5 10 5-10 5zM6 11v5c3 2 9 2 12 0v-5'],
+  ['Automotive', 'M5 16h14M3 16l2-6h14l2 6v3H3zM7 19v1M17 19v1'],
+  ['Gyms & Fitness', 'M3 10v4M6 8v8M18 8v8M21 10v4M6 12h12'],
+  ['Professional Services', 'M4 8h16v11H4zM9 8V5h6v3M4 13h16'],
+];
 const COLORS = ['#0A7D4F', '#05231A', '#0FA968', '#1E6B8F', '#0C5A3A', '#137F6B', '#2F8F5B'];
 const morphCards = document.getElementById('morphCards');
 if (morphCards) {
-  const PHOTOS = ["real-estate","property-management","resorts","hospitality","clinics","dental","salons","software"];
+  const PHOTOS = ["real-estate","property-management","resorts","hospitality","clinics","dental","salons","software","restaurants","ecommerce","education","automotive","gyms","professional"];
   morphCards.innerHTML = INDUSTRIES.map(([name, d], i) =>
     `<div class="mcard"><img src="/images/industries/${PHOTOS[i]}.webp" alt="${name} business using GenLeads automation" width="600" height="750" loading="lazy" decoding="async"><span class="mcard-ico"><svg viewBox="0 0 24 24"><path d="${d}"/></svg></span><b>${name}</b></div>`).join('');
 }
 
 // Nav: solid on scroll, dark variant over dark sections
 const nav = document.getElementById('nav');
-let navScrolled = null;
 const updateNav = () => {
-  const s = scrollY > 20;
-  if (s !== navScrolled) { navScrolled = s; nav.classList.toggle('scrolled', s); }
+  nav.classList.toggle('scrolled', scrollY > 20);
+  nav.style.pointerEvents = 'none';
+  const el = document.elementFromPoint(innerWidth / 2, 80);
+  nav.style.pointerEvents = '';
+  nav.classList.toggle('on-dark', !!(el && el.closest('.dark')));
 };
 addEventListener('scroll', updateNav, { passive: true });
 updateNav();
-// Dark-section detection without hit-testing: watch a 2px line just under the nav bar
-(() => {
-  const under = new Set();
-  let io;
-  const watch = () => {
-    if (io) io.disconnect();
-    under.clear();
-    io = new IntersectionObserver((entries) => {
-      entries.forEach((e) => (e.isIntersecting ? under.add(e.target) : under.delete(e.target)));
-      nav.classList.toggle('on-dark', under.size > 0);
-    }, { rootMargin: `-79px 0px -${Math.max(0, innerHeight - 81)}px 0px` });
-    document.querySelectorAll('.dark').forEach((el) => io.observe(el));
-  };
-  watch();
-  let t;
-  addEventListener('resize', () => { clearTimeout(t); t = setTimeout(watch, 200); });
-})();
 
 // Hero chat: messages arrive one by one, then loop
 const stage = document.getElementById('stage');
@@ -115,13 +108,10 @@ if (!hasGsap || reduce) {
   if (window.SplitText) gsap.registerPlugin(SplitText);
 
   // Smooth scroll, synced with ScrollTrigger
-  if (window.Lenis && window.GL_PERF && GL_PERF.glide) {
+  if (window.Lenis) {
     const lenis = new Lenis({ duration: 1.15, easing: (t) => 1 - Math.pow(1 - t, 4) });
-    window.glLenis = lenis;
     lenis.on('scroll', ScrollTrigger.update);
-    const raf = (t) => lenis.raf(t * 1000);
-    gsap.ticker.add(raf);
-    lenis.on('destroy', () => gsap.ticker.remove(raf));
+    gsap.ticker.add((t) => lenis.raf(t * 1000));
     gsap.ticker.lagSmoothing(0);
     document.querySelectorAll('a[href^="#"]').forEach((a) => a.addEventListener('click', (e) => {
       const id = a.getAttribute('href');
@@ -129,14 +119,14 @@ if (!hasGsap || reduce) {
     }));
   }
 
-  const splitWords = (el) => (window.SplitText ? new SplitText(el, { type: 'words', wordsClass: 'word', aria: 'none' }).words : [el]);
+  const splitWords = (el) => (window.SplitText ? new SplitText(el, { type: 'words', wordsClass: 'word' }).words : [el]);
 
   // Hero intro
   const heroWords = [...splitWords(document.querySelector('.h1-static')), document.querySelector('.rotator')];
   gsap.timeline({ defaults: { ease: 'expo.out' } })
     .from('.badge', { y: 20, opacity: 0, duration: 1 })
     .from(heroWords, { yPercent: 110, opacity: 0, rotate: 4, duration: 1.2, stagger: 0.06 }, '-=0.7')
-    .from('.hero .fade-up', { y: 30, duration: 1, stagger: 0.12 }, '-=0.9')
+    .from('.hero .fade-up', { y: 30, opacity: 0, duration: 1, stagger: 0.12 }, '-=0.9')
     .from('.hero-stage', { y: 60, opacity: 0, scale: 0.94, duration: 1.4 }, '-=1.2')
     .from('.stats > div', { y: 30, opacity: 0, duration: 0.9, stagger: 0.08 }, '-=1');
 
@@ -176,38 +166,16 @@ if (!hasGsap || reduce) {
   mm.add('(min-width: 981px)', () => {
     const track = document.getElementById('systemTrack');
     const dist = () => track.scrollWidth - innerWidth;
-    const sysProgressEl = document.getElementById('sysProgress');
-    let lastPct = -1;
-    gsap.to(track, { x: () => -dist(), ease: 'none',
+    const hz = gsap.to(track, { x: () => -dist(), ease: 'none',
       scrollTrigger: { trigger: '.system', pin: true, start: 'top top', end: () => `+=${dist()}`, scrub: 0.8, invalidateOnRefresh: true,
-        onUpdate: (s) => {
-          // Round to a whole % so the bar only gets a style write when it visibly moves,
-          // instead of on every fractional-pixel scroll update.
-          const pct = Math.round(s.progress * 100);
-          if (pct !== lastPct) { lastPct = pct; sysProgressEl.style.width = pct + '%'; }
-        } } });
-
-    // Card content reveals: was 4 ScrollTriggers tied to the pin's scrub via containerAnimation
-    // (recomputed every scroll frame against the pin's own progress — the most expensive GSAP/
-    // ScrollTrigger pattern). Replaced with a plain one-shot IntersectionObserver: each card's
-    // contents play in once, the moment the card is mostly in view, same as everywhere else on
-    // the site. No continuous per-frame cost once a card has already played.
+        onUpdate: (s) => { document.getElementById('sysProgress').style.width = `${s.progress * 100}%`; } } });
+    const inner = (card, targets, vars) => gsap.from(card.querySelectorAll(targets), { ...vars, ease: 'back.out(1.6)',
+      scrollTrigger: { trigger: card, containerAnimation: hz, start: 'left 75%', toggleActions: 'play none none reverse' } });
     const sc = gsap.utils.toArray('.sys-card');
-    const specs = [
-      [sc[0], '.mc, .mc-meta', { y: 24, opacity: 0, scale: 0.9, stagger: 0.25, duration: 0.7 }],
-      [sc[1], '.deal', { y: -30, opacity: 0, stagger: 0.12, duration: 0.7 }],
-      [sc[2], '.pay-steps span, .pay-note', { scale: 0.6, opacity: 0, stagger: 0.2, duration: 0.6 }],
-      [sc[3], '.rev', { y: 40, rotation: -4, opacity: 0, duration: 1 }],
-    ];
-    const cardIO = new IntersectionObserver((entries) => {
-      entries.forEach((e) => {
-        if (!e.isIntersecting) return;
-        const spec = specs.find(([card]) => card === e.target);
-        if (spec) gsap.from(spec[0].querySelectorAll(spec[1]), { ...spec[2], ease: 'back.out(1.6)' });
-        cardIO.unobserve(e.target);
-      });
-    }, { threshold: 0.55 });
-    specs.forEach(([card]) => cardIO.observe(card));
+    inner(sc[0], '.mc, .mc-meta', { y: 24, opacity: 0, scale: 0.9, stagger: 0.25, duration: 0.7 });
+    inner(sc[1], '.deal', { y: -30, opacity: 0, stagger: 0.12, duration: 0.7 });
+    inner(sc[2], '.pay-steps span, .pay-note', { scale: 0.6, opacity: 0, stagger: 0.2, duration: 0.6 });
+    inner(sc[3], '.rev', { y: 40, rotation: -4, opacity: 0, duration: 1 });
   });
 
   // Industries: cards scatter, line up, form a circle, then fan into an arc as you scroll
@@ -240,11 +208,9 @@ if (!hasGsap || reduce) {
       .to({}, { duration: 0.3 });
 
     // Once the arc has formed, keep the cards travelling around it like a slow wheel
-    let offset = 0, spinning = false, visible = false;
-    new IntersectionObserver(([e]) => { visible = e.isIntersecting; }).observe(box);
+    let offset = 0, spinning = false;
     const setters = cards.map((c) => ({ x: gsap.quickSetter(c, 'x', 'px'), y: gsap.quickSetter(c, 'y', 'px'), r: gsap.quickSetter(c, 'rotation', 'deg'), o: gsap.quickSetter(c, 'opacity') }));
     const spin = (time, dt) => {
-      if (!visible) return;
       offset = (offset + dt * 0.000018) % 1;
       cards.forEach((c, i) => {
         const t = (i / N + 0.5 / N + offset) % 1;
@@ -258,10 +224,8 @@ if (!hasGsap || reduce) {
       if (on && !spinning) { spinning = true; offset = 0; gsap.ticker.add(spin); }
       if (!on && spinning) { spinning = false; gsap.ticker.remove(spin); }
     });
-    // quickTo reuses one tween instead of creating a new one on every mousemove event
-    const moveX = gsap.quickTo('.morph-cards', 'x', { duration: 1.2, ease: 'power3.out' });
-    const onMove = (e) => moveX((e.clientX / innerWidth - 0.5) * 60);
-    box.addEventListener('mousemove', onMove, { passive: true });
+    const onMove = (e) => gsap.to('.morph-cards', { x: (e.clientX / innerWidth - 0.5) * 60, duration: 1.2, ease: 'power3.out' });
+    box.addEventListener('mousemove', onMove);
     return () => box.removeEventListener('mousemove', onMove);
   });
 
@@ -269,34 +233,11 @@ if (!hasGsap || reduce) {
   gsap.from('.booking-wrap', { clipPath: 'inset(12% 12% 12% 12% round 40px)', duration: 1.4, ease: 'expo.out',
     scrollTrigger: { trigger: '.booking-wrap', start: 'top 85%' } });
 
-  // How it works: line draws and steps light up + rise into place.
-  // Was 5 separate scrubbed ScrollTriggers all watching the same '.flow' element every
-  // scroll pixel; merged into 1 trigger, with the original per-element timings preserved
-  // exactly by remapping each one's own start/end viewport-% into the shared progress range.
+  // How it works: line draws and steps light up
   const steps = [...document.querySelectorAll('.step')];
-  const stepY = steps.map((el) => gsap.quickSetter(el, 'y', 'px'));
-  const flowPathEl = document.getElementById('flowPath');
-  const pathLen = flowPathEl.getTotalLength ? flowPathEl.getTotalLength() : 1000;
-  gsap.set(flowPathEl, { strokeDasharray: pathLen, strokeDashoffset: pathLen });
-  const flowOffset = gsap.quickSetter(flowPathEl, 'strokeDashoffset', 'px');
-
-  const OVERALL_START = 95, OVERALL_END = 30; // widest union of every original range (step0 start -> line end)
-  const span = OVERALL_START - OVERALL_END;
-  const pctToLocal = (pct) => (OVERALL_START - pct) / span;
-  const lineRange = [pctToLocal(75), pctToLocal(30)]; // original line-draw trigger: top 75% -> top 30%
-  const stepEndLocal = pctToLocal(45); // every step trigger originally ended at top 45%
-  const stepStartLocal = steps.map((_, i) => pctToLocal(95 - i * 4)); // step i started at top (95-4i)%
-  const remap = (p, a, b) => gsap.utils.clamp(0, 1, (p - a) / (b - a));
-
-  ScrollTrigger.create({ trigger: '.flow', start: `top ${OVERALL_START}%`, end: `top ${OVERALL_END}%`, scrub: true,
-    onUpdate: (s) => {
-      const lineProgress = remap(s.progress, lineRange[0], lineRange[1]);
-      flowOffset(pathLen * (1 - lineProgress));
-      steps.forEach((el, i) => {
-        el.classList.toggle('lit', lineProgress >= i / (steps.length - 1) - 0.02);
-        stepY[i](60 * (1 - remap(s.progress, stepStartLocal[i], stepEndLocal)));
-      });
-    } });
+  gsap.to('#flowPath', { strokeDashoffset: 0, ease: 'none',
+    scrollTrigger: { trigger: '.flow', start: 'top 75%', end: 'top 30%', scrub: true,
+      onUpdate: (s) => steps.forEach((el, i) => el.classList.toggle('lit', s.progress >= i / (steps.length - 1) - 0.02)) } });
 
   // Booking card floats in with depth
   gsap.from('.booking', { y: 80, rotateX: 12, opacity: 0, duration: 1.4, ease: 'expo.out', transformPerspective: 1000,
@@ -320,13 +261,12 @@ if (fine && !reduce) {
   document.addEventListener('mouseleave', () => document.documentElement.classList.remove('has-cursor'));
   addEventListener('mousedown', () => ring.classList.add('down'));
   addEventListener('mouseup', () => ring.classList.remove('down'));
-  let looping = false;
   const loop = () => {
     rx += (mx - rx) * 0.16; ry += (my - ry) * 0.16;
     ring.style.transform = `translate(${rx}px, ${ry}px)`;
-    if (Math.abs(mx - rx) > 0.2 || Math.abs(my - ry) > 0.2) requestAnimationFrame(loop); else looping = false;
+    requestAnimationFrame(loop);
   };
-  addEventListener('mousemove', () => { if (!looping) { looping = true; requestAnimationFrame(loop); } }, { passive: true });
+  loop();
   const state = (el) => {
     if (!el) return;
     const dk = !!el.closest('.dark, .video, .booking-wrap') && !el.closest('.btn-light');
@@ -338,12 +278,10 @@ if (fine && !reduce) {
     else if (pinned && el.closest('.sys-card')) { label.textContent = 'Scroll'; ring.classList.add('label'); dot.classList.add('hide'); }
   };
   document.addEventListener('mouseover', (ev) => state(ev.target));
-  let lastHit = 0, hitTimer;
-  const hit = () => { lastHit = performance.now(); state(document.elementFromPoint(mx, my)); };
+  let queued = false;
   addEventListener('scroll', () => {
-    if (!document.documentElement.classList.contains('has-cursor')) return;
-    clearTimeout(hitTimer); hitTimer = setTimeout(hit, 120);
-    if (performance.now() - lastHit > 250) hit();
+    if (queued) return; queued = true;
+    requestAnimationFrame(() => { queued = false; state(document.elementFromPoint(mx, my)); });
   }, { passive: true });
 }
 
@@ -354,18 +292,16 @@ if (cvs && !reduce) {
   const hero = document.querySelector('.hero');
   let w, h, pts = [], running = true;
   const size = () => {
-    const dpr = Math.min(devicePixelRatio || 1, 1.5);
+    const dpr = Math.min(devicePixelRatio || 1, 2);
     w = hero.clientWidth; h = hero.clientHeight;
     cvs.width = w * dpr; cvs.height = h * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     const n = Math.round(Math.min(90, w * h / 16000));
     pts = Array.from({ length: n }, () => ({ x: Math.random() * w, y: Math.random() * h, r: Math.random() * 1.6 + 0.4, vx: (Math.random() - 0.5) * 0.15, vy: -(Math.random() * 0.35 + 0.08), a: Math.random() * 0.5 + 0.2 }));
   };
-  // Start after the page has loaded so the particles never delay the first paint
-  const start = () => { size(); addEventListener('resize', size); new IntersectionObserver(([e]) => { running = e.isIntersecting; if (running) requestAnimationFrame(draw); }).observe(hero); };
-  const later = () => (window.requestIdleCallback ? requestIdleCallback(start, { timeout: 2000 }) : setTimeout(start, 600));
-  if (document.readyState === 'complete') later(); else addEventListener('load', later);
+  size(); addEventListener('resize', size);
+  new IntersectionObserver(([e]) => { running = e.isIntersecting; if (running) requestAnimationFrame(draw); }).observe(hero);
   function draw() {
-    if (!running || document.documentElement.classList.contains('lite')) { running = false; return; }
+    if (!running) return;
     ctx.clearRect(0, 0, w, h);
     for (const p of pts) {
       p.x += p.vx; p.y += p.vy;
@@ -374,11 +310,8 @@ if (cvs && !reduce) {
       ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
       ctx.fillStyle = `rgba(150, 240, 196, ${p.a})`; ctx.fill();
     }
-    ctx.lineWidth = 0.6;
     for (let i = 0; i < pts.length; i++) for (let k = i + 1; k < pts.length; k++) {
-      const dx = pts[i].x - pts[k].x; if (dx > 95 || dx < -95) continue;
-      const dy = pts[i].y - pts[k].y; if (dy > 95 || dy < -95) continue;
-      const d = dx * dx + dy * dy;
+      const dx = pts[i].x - pts[k].x, dy = pts[i].y - pts[k].y, d = dx * dx + dy * dy;
       if (d < 9000) { ctx.strokeStyle = `rgba(94, 234, 168, ${0.12 * (1 - d / 9000)})`; ctx.lineWidth = 0.6; ctx.beginPath(); ctx.moveTo(pts[i].x, pts[i].y); ctx.lineTo(pts[k].x, pts[k].y); ctx.stroke(); }
     }
     requestAnimationFrame(draw);
@@ -390,7 +323,8 @@ const spot = document.getElementById('heroSpot');
 if (spot && fine) {
   document.querySelector('.hero').addEventListener('mousemove', (e) => {
     const r = e.currentTarget.getBoundingClientRect();
-    spot.style.transform = `translate3d(${e.clientX - r.left - 600}px, ${e.clientY - r.top - 600}px, 0)`;
+    spot.style.setProperty('--sx', `${e.clientX - r.left}px`);
+    spot.style.setProperty('--sy', `${e.clientY - r.top}px`);
   });
 }
 
@@ -398,19 +332,11 @@ if (spot && fine) {
 if (hasGsap && !reduce) {
   gsap.to('#scrollProg', { scaleX: 1, ease: 'none', scrollTrigger: { start: 0, end: 'max', scrub: 0.3 } });
 
-  // Hero: content and phone separate in depth as you scroll away (1 trigger instead of 3,
-  // raw quickSetters instead of tweens so each scroll frame only writes style, no tween overhead)
-  (() => {
-    const copyY = gsap.quickSetter('.hero-copy', 'y', 'px'), copyO = gsap.quickSetter('.hero-copy', 'opacity');
-    const stageY = gsap.quickSetter('.hero-stage', 'y', 'px'), stageS = gsap.quickSetter('.hero-stage', 'scale');
-    const auroraS = gsap.quickSetter('.hero .aurora', 'scale');
-    ScrollTrigger.create({ trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true,
-      onUpdate: (s) => {
-        copyY(140 * s.progress); copyO(1 - s.progress * 0.8);
-        stageY(-60 * s.progress); stageS(1 - 0.06 * s.progress);
-        auroraS(1 + 0.25 * s.progress);
-      } });
-  })();
+  // Hero: content and phone separate in depth as you scroll away
+  const heroST = { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true };
+  gsap.to('.hero-copy', { y: 140, opacity: 0.2, ease: 'none', scrollTrigger: heroST });
+  gsap.to('.hero-stage', { y: -60, scale: 0.94, ease: 'none', scrollTrigger: heroST });
+  gsap.to('.hero .aurora', { scale: 1.25, ease: 'none', scrollTrigger: heroST });
 
   // Video poster drifts inside its frame
   gsap.fromTo('.video-poster .aurora', { yPercent: -10, scale: 1.2 }, { yPercent: 10, scale: 1.2, ease: 'none',
@@ -422,14 +348,14 @@ if (hasGsap && !reduce) {
     gsap.from(el, { x: -30, opacity: 0, duration: 1, ease: 'expo.out', scrollTrigger: { trigger: el, start: 'top 90%' } });
   });
 
-  // (step rise is already handled above, merged into the single '.flow' trigger)
+  // How it works steps rise in sequence
+  gsap.utils.toArray('.step').forEach((s, i) => gsap.fromTo(s, { y: 60 }, { y: 0, ease: 'none',
+    scrollTrigger: { trigger: '.flow', start: `top ${95 - i * 4}%`, end: 'top 45%', scrub: true } }));
 
-  // Audit: copy and booking card move at different speeds (1 trigger instead of 2)
+  // Audit: copy and booking card move at different speeds
   gsap.matchMedia().add('(min-width: 701px)', () => {
-    const copyY = gsap.quickSetter('.audit-copy', 'y', 'px');
-    const bookY = gsap.quickSetter('.booking-wrap', 'y', 'px');
-    ScrollTrigger.create({ trigger: '#audit', start: 'top bottom', end: 'bottom top', scrub: true,
-      onUpdate: (s) => { copyY(60 - 90 * s.progress); bookY(120 - 180 * s.progress); } });
+    gsap.fromTo('.audit-copy', { y: 60 }, { y: -30, ease: 'none', scrollTrigger: { trigger: '#audit', start: 'top bottom', end: 'bottom top', scrub: true } });
+    gsap.fromTo('.booking-wrap', { y: 120 }, { y: -60, ease: 'none', scrollTrigger: { trigger: '#audit', start: 'top bottom', end: 'bottom top', scrub: true } });
   });
 
   // FAQ rows cascade in

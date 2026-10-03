@@ -447,7 +447,7 @@ main, .footer { position: relative; }
 .hero:hover .hero-spot { opacity: 1; }
 .beam { position: absolute; top: -20%; left: -30%; width: 40%; height: 160%; z-index: -1; pointer-events: none; opacity: .5;
   background: linear-gradient(90deg, transparent, rgba(184,245,214,.07), transparent); transform: rotate(18deg); animation: beam 9s ease-in-out infinite; }
-@keyframes beam { 0% { transform: translateX(-25%) rotate(18deg); } 60%, 100% { transform: translateX(400%) rotate(18deg); } }
+@keyframes beam { 0% { left: -40%; } 60%, 100% { left: 120%; } }
 
 /* Scroll progress line under the nav */
 .scroll-progress { position: absolute; left: 0; bottom: 0; height: 2px; width: 100%; background: linear-gradient(90deg, var(--emerald), var(--mint)); transform-origin: 0 50%; transform: scaleX(0); }
@@ -571,55 +571,3 @@ h2 { margin-bottom: clamp(36px, 4.5vw, 60px); }
 @keyframes bkPulse { 50% { box-shadow: 0 0 0 8px rgba(10,125,79,.15), 0 12px 32px -8px rgba(10,125,79,.7); } }
 .bk-confirm { margin-top: 14px; }
 @media (prefers-reduced-motion: reduce) { .bk-book.ready { animation: none; } }
-.beam { left: -40%; will-change: transform; }
-.msg time, .wa-meta { color: #5F6B66; }
-
-/* Lighter effect set for weaker machines (html.lite) and paused off-screen dark sections */
-html.lite .aurora i, html.lite .bg-fx i, .paused .aurora i, .paused .beam, .paused .grid-lines { animation-play-state: paused; }
-html.lite .hero-particles, html.lite .fx-particles, html.lite .beam, html.lite .grain, html.lite .hero-spot, html.lite .fx-spot { display: none !important; }
-html.lite .grid-lines { animation: none; }
-html.lite *, html.lite *::before, html.lite *::after { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
-html.lite .nav.scrolled { background: rgba(255,255,255,.97); }
-html.lite .nav.scrolled.on-dark { background: rgba(5,35,26,.97); }
-html.lite .glass { background: rgba(6,40,29,.94); }
-html.lite .inbox, html.lite .pipe, html.lite .badge, html.lite .stats, html.lite .btn-ghost, html.lite .play { background-color: rgba(10,58,40,.92); }
-html.lite .float-card { background: #fff; }
-
-/* ---------- GPU-friendly effects (same look, far less work) ----------
-   Glows are pre-softened radial gradients on their own compositor layer instead of
-   live blur filters; the grid moves with transform instead of background-position;
-   grain no longer blends; the spotlight is a moving layer instead of a repainted gradient. */
-.aurora i, .bg-fx i { filter: none !important; will-change: transform; backface-visibility: hidden; }
-.aurora .a1 { background: radial-gradient(closest-side, #0FA968 0%, rgba(15,169,104,.55) 45%, rgba(15,169,104,0) 100%); }
-.aurora .a2 { background: radial-gradient(closest-side, #1E6B8F 0%, rgba(30,107,143,.55) 45%, rgba(30,107,143,0) 100%); }
-.aurora .a3 { background: radial-gradient(closest-side, #5EEAA8 0%, rgba(94,234,168,.55) 45%, rgba(94,234,168,0) 100%); }
-.bg-fx .b1 { background: radial-gradient(closest-side, #CFF3DF 0%, rgba(207,243,223,.6) 45%, rgba(207,243,223,0) 100%); }
-.bg-fx .b2 { background: radial-gradient(closest-side, #D7ECF2 0%, rgba(215,236,242,.6) 45%, rgba(215,236,242,0) 100%); }
-.bg-fx .b3 { background: radial-gradient(closest-side, #E6F8D9 0%, rgba(230,248,217,.6) 45%, rgba(230,248,217,0) 100%); }
-.aurora .a1 { width: 72vw; height: 72vw; max-width: 1100px; max-height: 1100px; }
-.aurora .a2 { width: 56vw; height: 56vw; max-width: 880px; max-height: 880px; }
-.aurora .a3 { width: 44vw; height: 44vw; max-width: 660px; max-height: 660px; }
-.bg-fx .b1 { width: 70vw; height: 70vw; } .bg-fx .b2 { width: 58vw; height: 58vw; } .bg-fx .b3 { width: 40vw; height: 40vw; }
-.bg-fx { contain: strict; }
-.halo { filter: none; }
-
-.grid-lines { inset: -72px; will-change: transform; }
-.hero .grid-lines, .live .grid-lines { animation: gridmove 22s linear infinite; }
-@keyframes gridmove { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(72px, 72px, 0); } }
-
-.grain { mix-blend-mode: normal; opacity: .035; }
-
-.hero-spot, .fx-spot { inset: auto; left: 0; top: 0; width: 1200px; height: 1200px; background: radial-gradient(closest-side, rgba(94,234,168,.16), rgba(94,234,168,0)); will-change: transform; transform: translate3d(-2000px, -2000px, 0); }
-.fx-spot { width: 1120px; height: 1120px; }
-
-/* Glass: real frosted blur only where it matters (menu bar, small floating cards);
-   big panels over moving backgrounds use tinted glass that looks the same. */
-.inbox, .pipe { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(12,58,40,.62); }
-.stats { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(255,255,255,.06); }
-.badge, .btn-ghost, .channels li, .faq-search { backdrop-filter: none; -webkit-backdrop-filter: none; }
-.glass { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
-
-/* Moving cards and pinned tracks get their own layer */
-.mcard, .system-track, .stage-phone, .tilt { will-change: transform; }
-
-@media (prefers-reduced-motion: reduce) { .hero .grid-lines, .live .grid-lines { animation: none; } }
