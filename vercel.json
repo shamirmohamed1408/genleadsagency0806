@@ -1,0 +1,11 @@
+{
+  "framework": null,
+  "installCommand": "echo \"static site, nothing to install\"",
+  "buildCommand": "echo \"static site, no build step\"",
+  "outputDirectory": ".",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "headers": [
+    { "source": "/(css|js|images)/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800" }] }
+  ]
+}

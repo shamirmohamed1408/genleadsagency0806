@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pick a Time for Your Free Audit | GenLeads</title>
+  <meta name="description" content="Choose a time for your free 30-minute GenLeads business audit on Google Meet.">
+  <meta name="robots" content="noindex, follow">
+  <link rel="canonical" href="https://genleadsagency.com/book">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/audit.css">
+</head>
+<body class="audit-page">
+
+<header class="nav scrolled" id="nav">
+  <div class="wrap nav-inner">
+    <a href="index.html" class="logo">Gen<span>Leads</span></a>
+    <ol class="journey-steps" aria-label="Booking steps"><li class="done"><i>1</i><span>Your details</span></li><li class="on"><i>2</i><span>Pick a time</span></li><li><i>3</i><span>Confirmed</span></li></ol>
+    <a href="audit.html" class="back-link">&larr; Edit details</a>
+  </div>
+</header>
+
+<div class="bg-fx" aria-hidden="true"><i class="b1"></i><i class="b2"></i><i class="b3"></i><span class="dots"></span></div>
+
+<main class="audit-wrap wrap">
+
+  <aside class="audit-side dark">
+    <div class="aurora faint" aria-hidden="true"><i class="a1"></i><i class="a3"></i></div>
+    <p class="eyebrow light">Step 2 of 3</p>
+    <h1><span id="hiName">Almost done.</span> <em>Pick a time.</em></h1>
+    <p class="side-lead">Choose a 30-minute slot that suits you. You'll get a Google Meet link and a confirmation on WhatsApp and email straight away.</p>
+
+    <div class="summary" id="summary" hidden>
+      <small>Your audit will cover</small>
+      <div class="sum-row"><span>Business</span><b id="sumBusiness"></b></div>
+      <div class="sum-row"><span>Industry</span><b id="sumIndustry"></b></div>
+      <div class="sum-row"><span>Focus</span><b id="sumFocus"></b></div>
+    </div>
+
+    <div class="side-meta">
+      <span>30 min</span><span>Google Meet</span><span>Free, no obligation</span>
+    </div>
+    <div class="host">
+      <span class="host-avatar">MS</span>
+      <div><b>Mohamed Shamir</b><small>Founder, GenLeads. Hosts every audit personally.</small></div>
+    </div>
+  </aside>
+
+  <section class="audit-card book-card">
+    <div id="cal" class="cal-embed" aria-label="Booking calendar"></div>
+
+    <div class="cal-loading" id="calLoading">
+      <span class="spinner" aria-hidden="true"></span>
+      <p>Loading available times…</p>
+    </div>
+
+    <div class="cal-fallback" id="calFallback" hidden>
+      <div class="cf-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></div>
+      <h2>Book your time on WhatsApp</h2>
+      <p>Our calendar couldn't load right now. Send us a message and we'll confirm a time with you in under 60 seconds.</p>
+      <a class="btn" id="waBook" href="https://wa.me/918667480588" target="_blank" rel="noopener">Book on WhatsApp</a>
+      <p class="cf-small">Or email <a href="mailto:shamir@genleadsagency.com">shamir@genleadsagency.com</a></p>
+    </div>
+  </section>
+</main>
+
+<script src="js/book.js"></script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+User-agent: *
+Allow: /
+Disallow: /tools/
+Disallow: /brand/
+
+# AI search crawlers are welcome
+User-agent: GPTBot
+Allow: /
+User-agent: OAI-SearchBot
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://genleadsagency.com/sitemap.xml

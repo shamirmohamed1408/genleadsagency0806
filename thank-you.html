@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>You're Booked | GenLeads Free Audit</title>
+  <meta name="description" content="Your free GenLeads business audit is booked.">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/audit.css">
+</head>
+<body class="audit-page">
+
+<header class="nav scrolled" id="nav">
+  <div class="wrap nav-inner">
+    <a href="index.html" class="logo">Gen<span>Leads</span></a>
+    <ol class="journey-steps" aria-label="Booking steps"><li class="done"><i>1</i><span>Your details</span></li><li class="done"><i>2</i><span>Pick a time</span></li><li class="on"><i>3</i><span>Confirmed</span></li></ol>
+    <a href="index.html" class="back-link">Home &rarr;</a>
+  </div>
+</header>
+
+<div class="bg-fx" aria-hidden="true"><i class="b1"></i><i class="b2"></i><i class="b3"></i><span class="dots"></span></div>
+
+<main class="wrap ty-wrap">
+  <section class="audit-card ty-card">
+    <div class="ty-burst" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="check"><svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></div>
+    <p class="eyebrow">Free business audit</p>
+    <h1 class="ty-title">You're booked<span id="tyName"></span>.</h1>
+    <p class="ty-when" id="tyWhen">Check your email for the time and Google Meet link.</p>
+    <p class="ty-lead">A confirmation is on its way to your WhatsApp and email. You'll also get a reminder 24 hours and 1 hour before the call.</p>
+
+    <div class="ty-steps">
+      <div><b>1</b><span><strong>Check WhatsApp and email</strong> for your confirmation and Google Meet link.</span></div>
+      <div><b>2</b><span><strong>Have your website or Instagram open.</strong> We'll walk through it together.</span></div>
+      <div><b>3</b><span><strong>Bring one question</strong> you most want answered.</span></div>
+    </div>
+
+    <div class="actions ty-actions">
+      <a class="btn" id="gcal" href="https://calendar.google.com" target="_blank" rel="noopener">Add to Google Calendar</a>
+      <a class="btn btn-outline" href="https://wa.me/918667480588" target="_blank" rel="noopener">Message us on WhatsApp</a>
+    </div>
+    <p class="ty-small">Need to reschedule? Use the link in your confirmation email, or message us on WhatsApp.</p>
+  </section>
+
+  <section class="ty-more">
+    <p class="eyebrow">While you wait</p>
+    <div class="ty-links">
+      <a href="how-it-works/index.html"><b>How it works</b><span>What happens after the audit.</span><i>&rarr;</i></a>
+      <a href="services/speed-to-lead/index.html"><b>Speed to Lead</b><span>See the AI agent in action.</span><i>&rarr;</i></a>
+      <a href="faq/index.html"><b>FAQ</b><span>Answers to common questions.</span><i>&rarr;</i></a>
+    </div>
+  </section>
+</main>
+
+<script>
+  (() => {
+    let b = null;
+    try { b = JSON.parse(localStorage.getItem('genleads-audit-booking')); } catch {}
+    if (!b) return;
+    const first = (b.name || '').split(' ')[0];
+    if (first) document.getElementById('tyName').textContent = `, ${first}`;
+    if (b.start) {
+      const start = new Date(b.start);
+      if (!isNaN(start)) {
+        const end = new Date(start.getTime() + 30 * 60000);
+        document.getElementById('tyWhen').textContent = start.toLocaleString(undefined, { weekday: 'long', day: 'numeric', month: 'long', hour: 'numeric', minute: '2-digit' });
+        const fmt = (d) => d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+        const details = `Free business audit with GenLeads${b.business ? ' for ' + b.business : ''}. The Google Meet link is in your confirmation email.`;
+        document.getElementById('gcal').href = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent('GenLeads · Free Business Audit')}&dates=${fmt(start)}/${fmt(end)}&details=${encodeURIComponent(details)}`;
+      }
+    }
+  })();
+</script>
+</body>
+</html>
