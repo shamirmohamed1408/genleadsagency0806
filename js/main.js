@@ -1,4 +1,5 @@
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const fine = matchMedia('(pointer: fine)').matches;
 const hasGsap = !!(window.gsap && window.ScrollTrigger);
 
 // Marquees: repeat items until each half is wider than the screen, so wide monitors never see a gap
@@ -51,6 +52,28 @@ if (stage && !reduce) {
   };
   play();
 }
+
+// 3D tilt on the hero phone
+const tilt = document.getElementById('tilt');
+if (tilt && fine && !reduce) {
+  const hero = document.querySelector('.hero');
+  hero.addEventListener('mousemove', (e) => {
+    const r = hero.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width - 0.5;
+    const y = (e.clientY - r.top) / r.height - 0.5;
+    tilt.style.transform = `rotateY(${x * 14}deg) rotateX(${-y * 10}deg)`;
+  });
+  hero.addEventListener('mouseleave', () => { tilt.style.transform = ''; });
+}
+
+// Cursor spotlight on cards
+document.querySelectorAll('.spot').forEach((card) => {
+  card.addEventListener('pointermove', (e) => {
+    const r = card.getBoundingClientRect();
+    card.style.setProperty('--mx', `${e.clientX - r.left}px`);
+    card.style.setProperty('--my', `${e.clientY - r.top}px`);
+  });
+});
 
 if (!hasGsap || reduce) {
   document.querySelectorAll('.flow-line path').forEach((p) => { p.style.strokeDashoffset = 0; });
@@ -165,6 +188,86 @@ if (!hasGsap || reduce) {
   addEventListener('load', () => ScrollTrigger.refresh());
 }
 
+// Custom cursor: exact dot + trailing ring that reacts to what it is over
+if (fine && !reduce) {
+  const dot = document.createElement('div'); dot.className = 'cursor-dot';
+  const ring = document.createElement('div'); ring.className = 'cursor-ring'; ring.innerHTML = '<span></span>';
+  document.body.append(dot, ring);
+  const label = ring.querySelector('span');
+  let mx = -100, my = -100, rx = -100, ry = -100;
+  addEventListener('mousemove', (e) => {
+    mx = e.clientX; my = e.clientY;
+    dot.style.transform = `translate(${mx}px, ${my}px)`;
+    document.documentElement.classList.add('has-cursor');
+  });
+  document.addEventListener('mouseleave', () => document.documentElement.classList.remove('has-cursor'));
+  addEventListener('mousedown', () => ring.classList.add('down'));
+  addEventListener('mouseup', () => ring.classList.remove('down'));
+  const loop = () => {
+    rx += (mx - rx) * 0.16; ry += (my - ry) * 0.16;
+    ring.style.transform = `translate(${rx}px, ${ry}px)`;
+    requestAnimationFrame(loop);
+  };
+  loop();
+  const state = (el) => {
+    if (!el) return;
+    const dk = !!el.closest('.dark, .video, .booking-wrap') && !el.closest('.btn-light');
+    dot.classList.toggle('dk', dk); ring.classList.toggle('dk', dk);
+    ring.classList.remove('hover', 'label'); dot.classList.remove('hide');
+    if (el.closest('#videoBox')) { label.textContent = 'Play'; ring.classList.add('label'); dot.classList.add('hide'); }
+    else if (el.closest('a, button, summary')) { ring.classList.add('hover'); dot.classList.add('hide'); }
+  };
+  document.addEventListener('mouseover', (ev) => state(ev.target));
+  let queued = false;
+  addEventListener('scroll', () => {
+    if (queued) return; queued = true;
+    requestAnimationFrame(() => { queued = false; state(document.elementFromPoint(mx, my)); });
+  }, { passive: true });
+}
+
+// Hero: floating particles that drift upward and link when close
+const cvs = document.getElementById('particles');
+if (cvs && !reduce) {
+  const ctx = cvs.getContext('2d');
+  const hero = document.querySelector('.hero');
+  let w, h, pts = [], running = true;
+  const size = () => {
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    w = hero.clientWidth; h = hero.clientHeight;
+    cvs.width = w * dpr; cvs.height = h * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const n = Math.round(Math.min(90, w * h / 16000));
+    pts = Array.from({ length: n }, () => ({ x: Math.random() * w, y: Math.random() * h, r: Math.random() * 1.6 + 0.4, vx: (Math.random() - 0.5) * 0.15, vy: -(Math.random() * 0.35 + 0.08), a: Math.random() * 0.5 + 0.2 }));
+  };
+  size(); addEventListener('resize', size);
+  new IntersectionObserver(([e]) => { running = e.isIntersecting; if (running) requestAnimationFrame(draw); }).observe(hero);
+  function draw() {
+    if (!running) return;
+    ctx.clearRect(0, 0, w, h);
+    for (const p of pts) {
+      p.x += p.vx; p.y += p.vy;
+      if (p.y < -10) { p.y = h + 10; p.x = Math.random() * w; }
+      if (p.x < -10) p.x = w + 10; if (p.x > w + 10) p.x = -10;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(150, 240, 196, ${p.a})`; ctx.fill();
+    }
+    for (let i = 0; i < pts.length; i++) for (let k = i + 1; k < pts.length; k++) {
+      const dx = pts[i].x - pts[k].x, dy = pts[i].y - pts[k].y, d = dx * dx + dy * dy;
+      if (d < 9000) { ctx.strokeStyle = `rgba(94, 234, 168, ${0.12 * (1 - d / 9000)})`; ctx.lineWidth = 0.6; ctx.beginPath(); ctx.moveTo(pts[i].x, pts[i].y); ctx.lineTo(pts[k].x, pts[k].y); ctx.stroke(); }
+    }
+    requestAnimationFrame(draw);
+  }
+}
+
+// Hero: soft spotlight follows the cursor
+const spot = document.getElementById('heroSpot');
+if (spot && fine) {
+  document.querySelector('.hero').addEventListener('mousemove', (e) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    spot.style.setProperty('--sx', `${e.clientX - r.left}px`);
+    spot.style.setProperty('--sy', `${e.clientY - r.top}px`);
+  });
+}
+
 // Page-long scroll effects (the industries section keeps its own pinned animation)
 if (hasGsap && !reduce) {
   gsap.to('#scrollProg', { scaleX: 1, ease: 'none', scrollTrigger: { start: 0, end: 'max', scrub: 0.3 } });
@@ -173,6 +276,11 @@ if (hasGsap && !reduce) {
   const heroST = { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true };
   gsap.to('.hero-copy', { y: 140, opacity: 0.2, ease: 'none', scrollTrigger: heroST });
   gsap.to('.hero-stage', { y: -60, scale: 0.94, ease: 'none', scrollTrigger: heroST });
+  gsap.to('.hero .aurora', { scale: 1.25, ease: 'none', scrollTrigger: heroST });
+
+  // Video poster drifts inside its frame
+  gsap.fromTo('.video-poster .aurora', { yPercent: -10, scale: 1.2 }, { yPercent: 10, scale: 1.2, ease: 'none',
+    scrollTrigger: { trigger: '#videoBox', start: 'top bottom', end: 'bottom top', scrub: true } });
 
   // Section eyebrows slide in from the side
   gsap.utils.toArray('.section .eyebrow').forEach((el) => {
