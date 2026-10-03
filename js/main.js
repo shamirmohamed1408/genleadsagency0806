@@ -23,31 +23,6 @@ if (rots.length && !reduce) {
   }, 2600);
 }
 
-// Industries: build cards for the scroll morph
-const INDUSTRIES = [
-  ['Real Estate', 'M3 21h18M5 21V9l7-5 7 5v12M9 21v-6h6v6'],
-  ['Property Management', 'M4 21V5h10v16M14 9h6v12M7 9h3M7 13h3M7 17h3'],
-  ['Resorts', 'M3 20h18M12 4c3 3 3 7 0 10M12 4C9 7 9 11 12 14M12 14v6M5 20c0-3 3-5 7-6'],
-  ['Hospitality', 'M3 18h18M5 18a7 7 0 0 1 14 0M12 8V6M10 6h4'],
-  ['Clinics', 'M12 5v14M5 12h14'],
-  ['Dental', 'M7 4c-2 0-3 2-3 4 0 4 2 5 2 9 0 2 1 3 2 3s1-3 2-5c1 2 1 5 2 5s2-1 2-3c0-4 2-5 2-9 0-2-1-4-3-4-2 0-2 1-4 1S9 4 7 4z'],
-  ['Salons & Spas', 'M6 6a3 3 0 1 0 0 .1M6 18a3 3 0 1 0 0 .1M8.5 7.5 20 18M8.5 16.5 20 6'],
-  ['Software', 'm8 8-4 4 4 4M16 8l4 4-4 4M14 5l-4 14'],
-  ['Restaurants', 'M7 3v8a2 2 0 0 0 4 0V3M9 11v10M17 3c-2 2-2 6 0 8v10'],
-  ['E-commerce', 'M3 4h3l2 12h11l2-8H7M10 20a1 1 0 1 0 0 .1M18 20a1 1 0 1 0 0 .1'],
-  ['Education', 'm2 9 10-5 10 5-10 5zM6 11v5c3 2 9 2 12 0v-5'],
-  ['Automotive', 'M5 16h14M3 16l2-6h14l2 6v3H3zM7 19v1M17 19v1'],
-  ['Gyms & Fitness', 'M3 10v4M6 8v8M18 8v8M21 10v4M6 12h12'],
-  ['Professional Services', 'M4 8h16v11H4zM9 8V5h6v3M4 13h16'],
-];
-const COLORS = ['#0A7D4F', '#05231A', '#0FA968', '#1E6B8F', '#0C5A3A', '#137F6B', '#2F8F5B'];
-const morphCards = document.getElementById('morphCards');
-if (morphCards) {
-  const PHOTOS = ["real-estate","property-management","resorts","hospitality","clinics","dental","salons","software","restaurants","ecommerce","education","automotive","gyms","professional"];
-  morphCards.innerHTML = INDUSTRIES.map(([name, d], i) =>
-    `<div class="mcard"><img src="/images/industries/${PHOTOS[i]}.webp" alt="${name} business using GenLeads automation" width="600" height="750" loading="lazy" decoding="async"><span class="mcard-ico"><svg viewBox="0 0 24 24"><path d="${d}"/></svg></span><b>${name}</b></div>`).join('');
-}
-
 // Nav: solid on scroll, dark variant over dark sections
 const nav = document.getElementById('nav');
 const updateNav = () => {
@@ -176,57 +151,6 @@ if (!hasGsap || reduce) {
     inner(sc[1], '.deal', { y: -30, opacity: 0, stagger: 0.12, duration: 0.7 });
     inner(sc[2], '.pay-steps span, .pay-note', { scale: 0.6, opacity: 0, stagger: 0.2, duration: 0.6 });
     inner(sc[3], '.rev', { y: 40, rotation: -4, opacity: 0, duration: 1 });
-  });
-
-  // Industries: cards scatter, line up, form a circle, then fan into an arc as you scroll
-  mm.add('all', () => {
-    const box = document.getElementById('morph');
-    const cards = gsap.utils.toArray('.mcard');
-    const N = cards.length;
-    const W = () => box.clientWidth, H = () => box.clientHeight;
-    const rnd = cards.map(() => [Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5]);
-    const mob = () => W() < 700;
-    const arcAt = (t) => {
-      const R = mob() ? W() * 1.5 : W() * 0.95;
-      // phones: space cards by their own width so only a few show at once and the rest wait off-screen
-      const full = mob() ? N * 108 / R * 180 / Math.PI : 2 * Math.asin(Math.min(0.95, (W() * 0.6) / R)) * 180 / Math.PI * N / (N - 1);
-      const a = (-90 - full / 2 + t * full) * Math.PI / 180;
-      return { x: Math.cos(a) * R, y: Math.sin(a) * R + H() * (mob() ? 0.1 : 0.2) + R, r: a * 180 / Math.PI + 90 };
-    };
-    gsap.set(cards, { x: (i) => rnd[i][0] * W() * 1.2, y: (i) => rnd[i][1] * H() * 1.2, rotation: (i) => rnd[i][2] * 180, scale: 0.6, opacity: 0 });
-    gsap.set('.morph-head', { opacity: 0, y: 30 });
-    gsap.set('.morph-intro', { opacity: 0 });
-    const tl = gsap.timeline({ defaults: { ease: 'power2.inOut' },
-      scrollTrigger: { trigger: box, pin: true, start: 'top top', end: () => (mob() ? '+=2000' : '+=2800'), scrub: 1, invalidateOnRefresh: true } });
-    tl.to(cards, { x: (i) => (i - (N - 1) / 2) * Math.min(132, W() * 0.92 / N), y: 0, rotation: 0, scale: 0.75, opacity: 1, duration: 1, stagger: 0.02 })
-      .to(cards, { x: (i) => Math.cos(i / N * Math.PI * 2) * (mob() ? W() * 0.42 : Math.min(W() * 0.32, 520)), y: (i) => Math.sin(i / N * Math.PI * 2) * (mob() ? W() * 0.42 : H() * 0.38),
-        rotation: (i) => i / N * 360 + 90, scale: () => (mob() ? 0.5 : 0.7), duration: 1 })
-      .to('.morph-intro', { opacity: 1, duration: 0.5 }, '<0.4')
-      .to('.morph-intro', { opacity: 0, duration: 0.4 }, '+=0.4')
-      .to(cards, { x: (i) => arcAt(i / N + 0.5 / N).x, y: (i) => arcAt(i / N + 0.5 / N).y, rotation: (i) => arcAt(i / N + 0.5 / N).r, scale: () => (mob() ? 0.85 : 0.9), duration: 1.2 }, '<')
-      .to('.morph-head', { opacity: 1, y: 0, duration: 0.6 }, '<0.6')
-      .to({}, { duration: 0.3 });
-
-    // Once the arc has formed, keep the cards travelling around it like a slow wheel
-    let offset = 0, spinning = false;
-    const setters = cards.map((c) => ({ x: gsap.quickSetter(c, 'x', 'px'), y: gsap.quickSetter(c, 'y', 'px'), r: gsap.quickSetter(c, 'rotation', 'deg'), o: gsap.quickSetter(c, 'opacity') }));
-    const spin = (time, dt) => {
-      offset = (offset + dt * 0.000018) % 1;
-      cards.forEach((c, i) => {
-        const t = (i / N + 0.5 / N + offset) % 1;
-        const pos = arcAt(t);
-        setters[i].x(pos.x); setters[i].y(pos.y); setters[i].r(pos.r);
-        setters[i].o(Math.min(1, Math.min(t, 1 - t) * 10));
-      });
-    };
-    tl.eventCallback('onUpdate', () => {
-      const on = tl.progress() > 0.985;
-      if (on && !spinning) { spinning = true; offset = 0; gsap.ticker.add(spin); }
-      if (!on && spinning) { spinning = false; gsap.ticker.remove(spin); }
-    });
-    const onMove = (e) => gsap.to('.morph-cards', { x: (e.clientX / innerWidth - 0.5) * 60, duration: 1.2, ease: 'power3.out' });
-    box.addEventListener('mousemove', onMove);
-    return () => box.removeEventListener('mousemove', onMove);
   });
 
   // Video and booking: clip-path reveal

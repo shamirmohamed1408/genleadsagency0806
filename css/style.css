@@ -465,8 +465,6 @@ main, .footer { position: relative; }
 .mcard b { font-size: 13.5px; text-shadow: 0 1px 6px rgba(0,0,0,.35); }
 
 /* ---------- Mobile fixes ---------- */
-.marquee-group { display: none !important; }
-.morph { display: block !important; }
 @media (max-width: 700px) {
   .mcard { width: 112px; height: 140px; margin: -70px 0 0 -56px; padding: 10px; border-radius: 16px; }
   .mcard b { font-size: 12px; }
@@ -572,3 +570,9 @@ h2 { margin-bottom: clamp(36px, 4.5vw, 60px); }
 @keyframes bkPulse { 50% { box-shadow: 0 0 0 8px rgba(10,125,79,.15), 0 12px 32px -8px rgba(10,125,79,.7); } }
 .bk-confirm { margin-top: 14px; }
 @media (prefers-reduced-motion: reduce) { .bk-book.ready { animation: none; } }
+
+/* Industries: two automatic rows (top right-to-left, bottom left-to-right) */
+.marquee-group { display: block; padding-block: 0 96px; }
+.marquee-group .marquee { margin-top: 0; }
+.marquee-group .marquee + .marquee { margin-top: 16px; }
+.marquee-group .marquee-track { animation-duration: 60s; }
