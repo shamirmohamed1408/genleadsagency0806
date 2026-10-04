@@ -53,6 +53,18 @@ if (stage && !reduce) {
   play();
 }
 
+// Homepage video: poster until play, then the native player takes over
+const videoBox = document.getElementById('videoBox');
+const vsl = videoBox?.querySelector('.vsl');
+if (videoBox && vsl) {
+  videoBox.addEventListener('click', () => {
+    if (videoBox.classList.contains('is-playing')) return;
+    videoBox.classList.add('is-playing');
+    vsl.controls = true;
+    vsl.play();
+  });
+}
+
 // 3D tilt on the hero phone
 const tilt = document.getElementById('tilt');
 if (tilt && fine && !reduce) {
@@ -277,10 +289,6 @@ if (hasGsap && !reduce) {
   gsap.to('.hero-copy', { y: 140, opacity: 0.2, ease: 'none', scrollTrigger: heroST });
   gsap.to('.hero-stage', { y: -60, scale: 0.94, ease: 'none', scrollTrigger: heroST });
   gsap.to('.hero .aurora', { scale: 1.25, ease: 'none', scrollTrigger: heroST });
-
-  // Video poster drifts inside its frame
-  gsap.fromTo('.video-poster .aurora', { yPercent: -10, scale: 1.2 }, { yPercent: 10, scale: 1.2, ease: 'none',
-    scrollTrigger: { trigger: '#videoBox', start: 'top bottom', end: 'bottom top', scrub: true } });
 
   // Section eyebrows slide in from the side
   gsap.utils.toArray('.section .eyebrow').forEach((el) => {
