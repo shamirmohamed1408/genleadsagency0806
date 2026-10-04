@@ -579,5 +579,8 @@ h2 { margin-bottom: clamp(36px, 4.5vw, 60px); }
 .marquee-group .marquee + .marquee { margin-top: 16px; }
 .marquee-group .marquee-track { animation-duration: 60s; }
 
-.logo { display: inline-flex; align-items: baseline; }
-.logo-mark { display: inline-block; flex: none; width: 1.5em; height: 1.5em; margin-right: .02em; align-self: center; background: currentColor; -webkit-mask: url("/images/logo/logo-mark.png") center / contain no-repeat; mask: url("/images/logo/logo-mark.png") center / contain no-repeat; }
+.logo { display: inline-flex; align-items: center; }
+.logo img { display: none; height: 36px; width: auto; }
+.logo img.logo-dk { display: block; }
+.nav.scrolled:not(.on-dark) .logo img.logo-dk, .foot-grid .logo img.logo-dk, .ft-news .logo img.logo-dk { display: none; }
+.nav.scrolled:not(.on-dark) .logo img.logo-lt, .foot-grid .logo img.logo-lt, .ft-news .logo img.logo-lt { display: block; }
