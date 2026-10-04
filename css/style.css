@@ -580,7 +580,9 @@ h2 { margin-bottom: clamp(36px, 4.5vw, 60px); }
 .marquee-group .marquee-track { animation-duration: 60s; }
 
 .logo { display: inline-flex; align-items: center; }
-.logo img { display: none; height: 36px; width: auto; }
+.logo img { display: none; height: 44px; width: auto; }
 .logo img.logo-dk { display: block; }
 .nav.scrolled:not(.on-dark) .logo img.logo-dk, .foot-grid .logo img.logo-dk, .ft-news .logo img.logo-dk { display: none; }
 .nav.scrolled:not(.on-dark) .logo img.logo-lt, .foot-grid .logo img.logo-lt, .ft-news .logo img.logo-lt { display: block; }
+.vp-logo { position: absolute; top: clamp(24px, 3vw, 48px); left: clamp(28px, 4vw, 64px); width: clamp(160px, 15vw, 220px); height: auto; }
+@media (max-width: 640px) { .logo img { height: 38px; } }
