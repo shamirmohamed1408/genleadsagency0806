@@ -7,7 +7,7 @@
 - [Custom CRM](https://www.genleadsagency.com/services/custom-crm): every lead, deal and customer in one pipeline built around the business's sales process, with automatic follow-ups and live reports.
 - [Process Automation](https://www.genleadsagency.com/services/process-automation): invoices created automatically, payment links sent on WhatsApp, reminders, and payment verification. Works with Razorpay, Stripe and UPI; GST and VAT ready.
 - [Reputation Management](https://www.genleadsagency.com/services/reputation-management): review requests to every customer at the right moment; 4-5 star ratings are sent to Google, lower ratings reach the owner privately; AI-drafted review replies.
-- [Website Development](https://www.genleadsagency.com/services/website-development): fast, mobile-first business websites with AI chat, WhatsApp replies, booking and CRM connected, plus SEO from day one. Live in 2 to 3 weeks.
+- [Website Development](https://www.genleadsagency.com/services/website-development): fast, mobile-first business websites with AI chat, WhatsApp replies, booking and CRM connected, plus SEO from day one. Live in 1 to 2 weeks.
 
 ## How it works
 Free 30-minute audit on Google Meet, then system design, build, testing and launch in 7 to 10 days, followed by ongoing improvement. Details: [How it works](https://www.genleadsagency.com/how-it-works).

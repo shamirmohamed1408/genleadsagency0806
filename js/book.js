@@ -10,6 +10,12 @@ const lead = read(LEAD_KEY) || {};
 const pref = read('genleads-audit-pref');
 const first = (lead.name || '').split(' ')[0];
 
+// Visitors who came from the ad landing page edit their details there
+if (lead.source && lead.source.includes('/lp/')) {
+  const back = document.querySelector('.back-link');
+  if (back) back.href = '/lp/website-audit';
+}
+
 // Left panel: personalise from the form
 if (first) document.getElementById('hiName').textContent = `Thanks, ${first}.`;
 if (lead.business) {
@@ -48,7 +54,9 @@ if (!CAL_LINK) {
   (function (C, A, L) { const p = function (a, ar) { a.q.push(ar); }; const d = C.document; C.Cal = C.Cal || function () { const cal = C.Cal; const ar = arguments; if (!cal.loaded) { cal.ns = {}; cal.q = cal.q || []; d.head.appendChild(d.createElement('script')).src = A; cal.loaded = true; } if (ar[0] === L) { const api = function () { p(api, arguments); }; const namespace = ar[1]; api.q = api.q || []; if (typeof namespace === 'string') { cal.ns[namespace] = cal.ns[namespace] || api; p(cal.ns[namespace], ar); p(cal, ['initNamespace', namespace]); } else p(cal, ar); return; } p(cal, ar); }; })(window, 'https://app.cal.com/embed/embed.js', 'init');
 
   const notes = [lead.business && `Business: ${lead.business}`, lead.site && `Site/IG: ${lead.site}`, lead.industry && `Industry: ${lead.industry}`,
-    lead.problems && lead.problems.length && `Focus: ${lead.problems.join(', ')}`, lead.tier && `Lead score: ${lead.tier}`].filter(Boolean).join('\n');
+    lead.problems && lead.problems.length && `Focus: ${lead.problems.join(', ')}`, lead.tier && `Lead score: ${lead.tier}`,
+    lead.hasWebsite && `Has website: ${lead.hasWebsite}`, lead.budgetOk && `Budget Rs 20-30k OK: ${lead.budgetOk}`,
+    lead.calculator && lead.calculator.perMonth && `Estimated loss: Rs ${lead.calculator.perMonth.toLocaleString('en-IN')} a month`].filter(Boolean).join('\n');
 
   Cal('init', 'audit', { origin: 'https://cal.com' });
   Cal.ns.audit('inline', {
