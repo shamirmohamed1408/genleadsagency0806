@@ -53,6 +53,35 @@
 .fit-col.yes { border-color: rgba(10,125,79,.3); background: linear-gradient(180deg, var(--mint-soft), #fff 70%); }
 .fit-col .check-list, .fit-col .x-list { margin-top: 18px; font-size: 16px; gap: 12px; }
 
+/* Proof strip */
+.proof-band { padding-block: clamp(36px, 5vw, 64px); border-bottom: 1px solid var(--line); background: #fff; position: relative; }
+.proof-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(16px, 3vw, 40px); }
+.proof-grid div { display: grid; gap: 6px; align-content: start; padding-left: 18px; border-left: 2px solid var(--mint); }
+.proof-grid b { font-family: var(--display); font-size: clamp(20px, 2vw, 26px); letter-spacing: -0.03em; color: var(--forest); }
+.proof-grid span { font-size: 14.5px; color: var(--muted); line-height: 1.45; }
+
+/* Done for you */
+.dfy { display: grid; grid-template-columns: .8fr 1.2fr; gap: 20px; }
+.dfy-col { border-radius: 28px; padding: clamp(24px, 3vw, 40px); border: 1px solid var(--line); background: #fff; }
+.dfy-col.we { background: var(--forest); border-color: transparent; color: var(--on-dark); }
+.dfy-col > b { display: block; font-family: var(--display); font-size: 24px; letter-spacing: -0.03em; }
+.dfy-col.we > b { color: #fff; }
+.dfy-sub { display: block; font-size: 13.5px; color: var(--muted); margin-top: 2px; }
+.dfy-col.we .dfy-sub { color: var(--mint); }
+.dfy-col .check-list { margin-top: 22px; font-size: 16px; gap: 12px; }
+
+/* Limited capacity line */
+.limited { display: flex; gap: 12px; align-items: flex-start; margin-top: 24px; font-size: 15px; font-weight: 500; padding: 14px 18px; border-radius: 16px; background: var(--mint-soft); color: var(--forest); }
+.limited i { flex: none; width: 9px; height: 9px; margin-top: 8px; border-radius: 50%; background: var(--emerald); box-shadow: 0 0 0 4px rgba(10,125,79,.18); }
+
+/* Free review band */
+.review-band { display: grid; grid-template-columns: 1.1fr .9fr; gap: clamp(24px, 5vw, 72px); align-items: center; border: 1px solid var(--line); border-radius: 32px; padding: clamp(28px, 4.5vw, 64px); background: linear-gradient(135deg, var(--mint-soft), #fff 65%); }
+.review-band h2 { font-size: clamp(30px, 3.6vw, 52px); margin-bottom: 18px; }
+.review-side .check-list { margin: 0 0 28px; font-size: 16.5px; }
+
+/* Bot trap: invisible to people, filled in by bots */
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
 /* Audit form page extras */
 .est-card { margin-top: 28px; padding: 20px 22px; border-radius: 20px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.14); }
 .est-card small { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .12em; color: var(--mint); font-weight: 600; }
@@ -75,6 +104,8 @@
   .lp-form .audit-card { order: -1; }
   .calc { grid-template-columns: 1fr; }
   .calc-intro { margin-top: -24px; }
+  .dfy, .review-band { grid-template-columns: 1fr; }
+  .proof-grid { grid-template-columns: 1fr 1fr; row-gap: 28px; }
 }
 @media (max-width: 640px) {
   .lp-nav-wa { display: none; }

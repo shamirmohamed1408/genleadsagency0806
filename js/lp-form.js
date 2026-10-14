@@ -120,6 +120,9 @@ form.addEventListener('keydown', (e) => {
 
 async function submit() {
   const d = collect();
+  // Bots fill the hidden field: pretend it worked and send nothing
+  if (d.hp) { store.del(DRAFT_KEY); document.getElementById('formView').hidden = true; document.getElementById('softView').hidden = false; return; }
+  delete d.hp;
   const qualified = d.budgetOk.startsWith('Yes');
   const lead = {
     ...d,
@@ -161,4 +164,10 @@ async function submit() {
 }
 
 loadDraft();
+// "Get my website reviewed" link: start with the rebrand option chosen
+if (new URLSearchParams(location.search).get('need') === 'review') {
+  const g = form.querySelector('.chips[data-name="hasWebsite"]');
+  g.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.textContent.trim() === 'Yes, but it needs a rebrand'));
+  syncSite();
+}
 show(current);
