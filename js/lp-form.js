@@ -150,6 +150,7 @@ async function submit() {
     }
   }
   store.del(DRAFT_KEY);
+  if (typeof gtag === 'function') gtag('event', qualified ? 'generate_lead' : 'lead_not_qualified', { form: lead.source });
   if (qualified) {
     store.set(LEAD_KEY, lead);
     location.href = '/book';
