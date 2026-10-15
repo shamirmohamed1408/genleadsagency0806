@@ -1,4 +1,4 @@
-// Ad landing page form: qualifies the lead. Budget "yes" continues to /book, budget "no" gets a polite close.
+// Ad landing page form: qualifies the lead. Ad budget of ₹10,000 or more continues to /book; under ₹10,000 gets a polite close.
 const WEBHOOK_URL = ''; // n8n webhook: receives every submission (qualified or not) as JSON
 
 const form = document.getElementById('lpForm');
@@ -27,7 +27,9 @@ if (calc && calc.perMonth > 0) {
 
 const siteField = document.getElementById('siteField');
 const syncSite = () => {
-  const v = chipValue(form.querySelector('.chips[data-name="hasWebsite"]'))[0] || '';
+  const hw = form.querySelector('.chips[data-name="hasWebsite"]');
+  if (!hw) return;
+  const v = chipValue(hw)[0] || '';
   siteField.hidden = !(v === 'Yes' || v === 'Yes, but it needs a rebrand');
 };
 
@@ -123,7 +125,7 @@ async function submit() {
   // Bots fill the hidden field: pretend it worked and send nothing
   if (d.hp) { store.del(DRAFT_KEY); document.getElementById('formView').hidden = true; document.getElementById('softView').hidden = false; return; }
   delete d.hp;
-  const qualified = d.budgetOk.startsWith('Yes');
+  const qualified = d.adBudget !== 'Under ₹10,000';
   const lead = {
     ...d,
     qualified,
@@ -156,7 +158,7 @@ async function submit() {
   // Budget is not a fit: close politely, no booking
   const first = (d.name || '').split(' ')[0];
   document.getElementById('softTitle').textContent = first ? `Thanks, ${first}.` : 'Thanks for your interest.';
-  const text = `Hi GenLeads, I'm ${d.name} from ${d.business}. I filled in your website form but my budget is under ₹20,000. Please keep me in mind if you have options.`;
+  const text = `Hi GenLeads, I'm ${d.name} from ${d.business}. I filled in your form but my ad budget is under ₹10,000 a month. Please keep me in mind if you have options.`;
   document.getElementById('softWa').href = `https://wa.me/918667480588?text=${encodeURIComponent(text)}`;
   document.getElementById('formView').hidden = true;
   document.getElementById('softView').hidden = false;
@@ -165,7 +167,7 @@ async function submit() {
 
 loadDraft();
 // "Get my website reviewed" link: start with the rebrand option chosen
-if (new URLSearchParams(location.search).get('need') === 'review') {
+if (new URLSearchParams(location.search).get('need') === 'review' && form.querySelector('.chips[data-name="hasWebsite"]')) {
   const g = form.querySelector('.chips[data-name="hasWebsite"]');
   g.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.textContent.trim() === 'Yes, but it needs a rebrand'));
   syncSite();

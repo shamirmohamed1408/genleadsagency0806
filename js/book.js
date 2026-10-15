@@ -13,7 +13,7 @@ const first = (lead.name || '').split(' ')[0];
 // Visitors who came from the ad landing page edit their details there
 if (lead.source && lead.source.includes('/lp/')) {
   const back = document.querySelector('.back-link');
-  if (back) back.href = '/lp/website-audit';
+  if (back) back.href = lead.source.includes('lead-management') ? '/lp/lead-management-audit' : '/lp/website-audit';
 }
 
 // Left panel: personalise from the form
@@ -55,7 +55,7 @@ if (!CAL_LINK) {
 
   const notes = [lead.business && `Business: ${lead.business}`, lead.site && `Site/IG: ${lead.site}`, lead.industry && `Industry: ${lead.industry}`,
     lead.problems && lead.problems.length && `Focus: ${lead.problems.join(', ')}`, lead.tier && `Lead score: ${lead.tier}`,
-    lead.hasWebsite && `Has website: ${lead.hasWebsite}`, lead.budgetOk && `Budget Rs 20-30k OK: ${lead.budgetOk}`,
+    lead.hasWebsite && `Has website: ${lead.hasWebsite}`, lead.adBudget && `Monthly ad budget: ${lead.adBudget}`,
     lead.calculator && lead.calculator.perMonth && `Estimated loss: Rs ${lead.calculator.perMonth.toLocaleString('en-IN')} a month`].filter(Boolean).join('\n');
 
   Cal('init', 'audit', { origin: 'https://cal.com' });

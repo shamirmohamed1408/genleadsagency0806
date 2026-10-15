@@ -79,6 +79,14 @@
 .review-band h2 { font-size: clamp(30px, 3.6vw, 52px); margin-bottom: 18px; }
 .review-side .check-list { margin: 0 0 28px; font-size: 16.5px; }
 
+.lm-row { display: grid; grid-template-columns: 40px minmax(0,1fr) auto; gap: 12px; align-items: center; background: #fff; color: var(--ink); border-radius: 16px; padding: 12px 14px; margin-bottom: 10px; animation: rowIn .8s var(--ease) both; }
+.lm-row:nth-child(2) { animation-delay: .25s; } .lm-row:nth-child(3) { animation-delay: .5s; } .lm-row:nth-child(4) { animation-delay: .75s; }
+.lm-ico { width: 40px; height: 40px; border-radius: 12px; background: var(--tint); display: grid; place-items: center; }
+.lm-ico svg { width: 20px; height: 20px; }
+.lm-row b { display: block; font-size: 14px; }
+.lm-row small { display: block; font-size: 12.5px; color: var(--muted); }
+.lm-row em { font-style: normal; font-size: 12px; font-weight: 600; padding: 5px 10px; border-radius: 980px; background: var(--mint-soft); color: var(--emerald); }
+
 /* Bot trap: invisible to people, filled in by bots */
 .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 
