@@ -153,7 +153,8 @@ async function submit() {
   if (typeof gtag === 'function') gtag('event', qualified ? 'generate_lead' : 'lead_not_qualified', { form: lead.source });
   if (qualified) {
     store.set(LEAD_KEY, lead);
-    location.href = '/book';
+    const text = `Hi GenLeads, I'm ${d.name} from ${d.business}. I'm interested in ${d.problems.join(', ') || 'your services'}. My monthly ad budget is ${d.adBudget}.`;
+    location.href = 'https://wa.me/918667480588?text=' + encodeURIComponent(text);
     return;
   }
   // Budget is not a fit: close politely, no booking
