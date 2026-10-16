@@ -154,7 +154,7 @@ async function submit() {
   if (qualified) { store.set(LEAD_KEY, lead); if (typeof fbq === 'function') fbq('track', 'Lead'); }
   const problems = d.problems && d.problems.length ? d.problems.join(', ') : 'your services';
   const text = `Hi GenLeads, I'm ${d.name} from ${d.business}. I'm interested in ${problems}. My monthly ad budget is ${d.adBudget}.`;
-  location.href = 'https://wa.me/918667480588?text=' + encodeURIComponent(text);
+  location.href = 'https://wa.me/919442666986?text=' + encodeURIComponent(text);
 }
 
 loadDraft();

@@ -34,7 +34,7 @@ if (pref && pref.label) {
 const waText = lead.name
   ? `Hi GenLeads, I'd like to book my free audit. I'm ${lead.name} from ${lead.business || 'my business'}. Email: ${lead.email || ''}`
   : "Hi GenLeads, I'd like to book a free business audit.";
-document.getElementById('waBook').href = `https://wa.me/918667480588?text=${encodeURIComponent(waText)}`;
+document.getElementById('waBook').href = `https://wa.me/919442666986?text=${encodeURIComponent(waText)}`;
 
 const loading = document.getElementById('calLoading');
 const fallback = document.getElementById('calFallback');
