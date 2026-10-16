@@ -151,20 +151,10 @@ async function submit() {
   }
   store.del(DRAFT_KEY);
   if (typeof gtag === 'function') gtag('event', qualified ? 'generate_lead' : 'lead_not_qualified', { form: lead.source });
-  if (qualified) {
-    store.set(LEAD_KEY, lead);
-    const text = `Hi GenLeads, I'm ${d.name} from ${d.business}. I'm interested in ${d.problems.join(', ') || 'your services'}. My monthly ad budget is ${d.adBudget}.`;
-    location.href = 'https://wa.me/918667480588?text=' + encodeURIComponent(text);
-    return;
-  }
-  // Budget is not a fit: close politely, no booking
-  const first = (d.name || '').split(' ')[0];
-  document.getElementById('softTitle').textContent = first ? `Thanks, ${first}.` : 'Thanks for your interest.';
-  const text = `Hi GenLeads, I'm ${d.name} from ${d.business}. I filled in your form but my ad budget is under ₹10,000 a month. Please keep me in mind if you have options.`;
-  document.getElementById('softWa').href = `https://wa.me/918667480588?text=${encodeURIComponent(text)}`;
-  document.getElementById('formView').hidden = true;
-  document.getElementById('softView').hidden = false;
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (qualified) { store.set(LEAD_KEY, lead); if (typeof fbq === 'function') fbq('track', 'Lead'); }
+  const problems = d.problems && d.problems.length ? d.problems.join(', ') : 'your services';
+  const text = `Hi GenLeads, I'm ${d.name} from ${d.business}. I'm interested in ${problems}. My monthly ad budget is ${d.adBudget}.`;
+  location.href = 'https://wa.me/918667480588?text=' + encodeURIComponent(text);
 }
 
 loadDraft();
