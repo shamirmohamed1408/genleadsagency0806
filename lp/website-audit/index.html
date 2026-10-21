@@ -64,12 +64,6 @@ src="https://www.facebook.com/tr?id=1421919389379591&ev=PageView&noscript=1"
     <h1>Find out what you're <em>leaving on the table.</em></h1>
     <p class="side-lead">A 30-minute call where we look at your website and your enquiries, and show you exactly where customers are slipping away.</p>
 
-    <div class="est-card" id="estCard" hidden>
-      <small>Your estimate</small>
-      <b id="estNum">₹0</b>
-      <span>lost every month at your current numbers</span>
-    </div>
-
     <ul class="side-list">
       <li><b>Website and speed check</b><span>How your site loads and looks on a phone, and whether it brings enquiries.</span></li>
       <li><b>Reply-time test</b><span>How fast you really answer a new enquiry, and what that costs.</span></li>
@@ -98,14 +92,14 @@ src="https://www.facebook.com/tr?id=1421919389379591&ev=PageView&noscript=1"
           <h2 class="step-title">Let's start with you</h2>
           <p class="hint">So we know who we're talking to.</p>
           <div class="field"><label for="name">Full name</label><input id="name" name="name" autocomplete="name" placeholder="e.g. Priya Nair" required></div>
+          <div class="field"><label for="business">Business name</label><input id="business" name="business" autocomplete="organization" placeholder="e.g. Coastal Stays" required></div>
           <div class="field"><label for="whatsapp">WhatsApp number</label><input id="whatsapp" name="whatsapp" type="tel" autocomplete="tel" placeholder="+91 98765 43210" required pattern="^\+?[0-9 \(\)\-]{8,18}$"><small>We'll send your booking confirmation and reminders here.</small></div>
-          <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="email" placeholder="you@business.com" required></div>
         </fieldset>
 
         <fieldset class="step" data-title="Your business">
           <h2 class="step-title">Tell us about your business</h2>
           <p class="hint">A few quick answers so the audit is useful.</p>
-          <div class="field"><label for="business">Business name</label><input id="business" name="business" autocomplete="organization" placeholder="e.g. Coastal Stays" required></div>
+          <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="email" placeholder="you@business.com" required></div>
           <div class="field"><label for="industry">Business industry</label>
             <select id="industry" name="industry" required>
               <option value="">Select your industry</option>

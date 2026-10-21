@@ -20,7 +20,7 @@ const inr = (n) => '₹' + Math.round(n).toLocaleString('en-IN');
 
 // Show the visitor their own estimate from the calculator
 const calc = store.get(CALC_KEY);
-if (calc && calc.perMonth > 0) {
+if (calc && calc.perMonth > 0 && document.getElementById('estCard')) {
   document.getElementById('estNum').textContent = inr(calc.perMonth);
   document.getElementById('estCard').hidden = false;
 }
