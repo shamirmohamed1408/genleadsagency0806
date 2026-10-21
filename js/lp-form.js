@@ -9,6 +9,7 @@ const errorEl = document.getElementById('formError');
 const DRAFT_KEY = 'genleads-lp-draft';
 const LEAD_KEY = 'genleads-audit-lead'; // same key /book already reads
 const CALC_KEY = 'genleads-lp-calc';
+const NEXT = document.body.dataset.next || ''; // optional page to continue to after submit
 const SEND_LABEL = nextBtn.textContent;
 let current = 0;
 
@@ -163,7 +164,10 @@ async function submit() {
   }
   store.del(DRAFT_KEY);
   if (typeof gtag === 'function') gtag('event', qualified ? 'generate_lead' : 'lead_not_qualified', { form: lead.source });
-  if (qualified) { store.set(LEAD_KEY, lead); if (typeof fbq === 'function') fbq('track', 'Lead'); }
+  if (NEXT || qualified) store.set(LEAD_KEY, lead);
+  if (qualified && typeof fbq === 'function') fbq('track', 'Lead');
+  // Pages with data-next send the visitor to a page instead of WhatsApp (they book themselves)
+  if (NEXT) { location.href = NEXT; return; }
   const problems = d.problems && d.problems.length ? d.problems.join(', ') : 'your services';
   const adLine = d.needAds === 'Yes' ? `My monthly ad budget is ${d.adBudget}.` : "I don't need advertising right now.";
   const text = `Hi GenLeads, I'm ${d.name} from ${d.business}. I'm interested in ${problems}. ${adLine}`;
