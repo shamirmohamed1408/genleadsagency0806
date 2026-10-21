@@ -1,5 +1,5 @@
 // Ad landing page form: qualifies the lead. Ad budget of ₹10,000 or more continues to /book; under ₹10,000 gets a polite close.
-const WEBHOOK_URL = ''; // n8n webhook: receives every submission (qualified or not) as JSON
+const WEBHOOK_URL = 'https://n8n.genleadsagency.com/webhook/genleads-website-audit'; // n8n webhook: receives every submission (qualified or not) as JSON
 
 const form = document.getElementById('lpForm');
 const steps = [...form.querySelectorAll('fieldset.step')];
@@ -133,7 +133,7 @@ async function submit() {
     calculator: calc || null,
     stage: qualified ? 'form_completed' : 'budget_not_a_fit',
     visitorTimeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    source: 'genleadsagency.com/lp/website-development',
+    source: 'genleadsagency.com' + location.pathname,
     submittedAt: new Date().toISOString(),
   };
   nextBtn.disabled = true;
