@@ -9,6 +9,7 @@ const errorEl = document.getElementById('formError');
 const DRAFT_KEY = 'genleads-lp-draft';
 const LEAD_KEY = 'genleads-audit-lead'; // same key /book already reads
 const CALC_KEY = 'genleads-lp-calc';
+const SEND_LABEL = nextBtn.textContent;
 let current = 0;
 
 const store = {
@@ -26,6 +27,12 @@ if (calc && calc.perMonth > 0 && document.getElementById('estCard')) {
 }
 
 const siteField = document.getElementById('siteField');
+const adField = document.getElementById('adBudgetField');
+const syncAds = () => {
+  if (!adField) return;
+  const na = form.querySelector('.chips[data-name="needAds"]');
+  adField.hidden = !(na && chipValue(na)[0] === 'Yes');
+};
 const syncSite = () => {
   const hw = form.querySelector('.chips[data-name="hasWebsite"]');
   if (!hw) return;
@@ -42,6 +49,7 @@ document.querySelectorAll('.chips').forEach((group) => {
     group.classList.remove('invalid');
     errorEl.textContent = '';
     syncSite();
+    syncAds();
     saveDraft();
   });
 });
@@ -67,6 +75,7 @@ function loadDraft() {
     if (g) g.querySelectorAll('button').forEach((b) => b.classList.toggle('on', [].concat(v).includes(b.textContent.trim())));
   });
   syncSite();
+  syncAds();
   if (saved.step > 0 && saved.step < steps.length) show(saved.step);
 }
 form.addEventListener('input', (e) => { e.target.classList.remove('invalid'); errorEl.textContent = ''; saveDraft(); });
@@ -80,6 +89,7 @@ function validate(i) {
     if (bad) ok = false;
   });
   step.querySelectorAll('.chips[data-required]').forEach((g) => {
+    if (g.closest('[hidden]')) return;
     const bad = chipValue(g).length === 0;
     g.classList.toggle('invalid', bad);
     if (bad) ok = false;
@@ -100,11 +110,13 @@ function show(i, dir = 1) {
   s.classList.add('active');
   s.classList.toggle('back-in', dir < 0);
   const pct = Math.round(((current + 1) / steps.length) * 100);
-  document.getElementById('bar').style.width = pct + '%';
-  document.getElementById('stepPct').textContent = pct + '%';
-  document.getElementById('stepLabel').textContent = `Step ${current + 1} of ${steps.length} · ${s.dataset.title}`;
+  const bar = document.getElementById('bar');
+  if (bar) bar.style.width = pct + '%';
+  const pctEl = document.getElementById('stepPct');
+  if (pctEl) pctEl.textContent = pct + '%';
+  const label = document.getElementById('stepLabel');
+  if (label) label.textContent = `Step ${current + 1} of ${steps.length} · ${s.dataset.title}`;
   backBtn.style.visibility = current === 0 ? 'hidden' : 'visible';
-  nextBtn.textContent = current === steps.length - 1 ? 'Continue' : 'Continue';
   errorEl.textContent = '';
   const field = s.querySelector('input, select');
   if (field && matchMedia('(pointer: fine)').matches) field.focus({ preventScroll: true });
@@ -144,7 +156,7 @@ async function submit() {
       if (!res.ok) throw new Error(res.status);
     } catch {
       nextBtn.disabled = false;
-      nextBtn.textContent = 'Continue';
+      nextBtn.textContent = SEND_LABEL;
       errorEl.textContent = "We couldn't save your details. Check your connection and try again, or message us on WhatsApp.";
       return;
     }
@@ -153,7 +165,8 @@ async function submit() {
   if (typeof gtag === 'function') gtag('event', qualified ? 'generate_lead' : 'lead_not_qualified', { form: lead.source });
   if (qualified) { store.set(LEAD_KEY, lead); if (typeof fbq === 'function') fbq('track', 'Lead'); }
   const problems = d.problems && d.problems.length ? d.problems.join(', ') : 'your services';
-  const text = `Hi GenLeads, I'm ${d.name} from ${d.business}. I'm interested in ${problems}. My monthly ad budget is ${d.adBudget}.`;
+  const adLine = d.needAds === 'Yes' ? `My monthly ad budget is ${d.adBudget}.` : "I don't need advertising right now.";
+  const text = `Hi GenLeads, I'm ${d.name} from ${d.business}. I'm interested in ${problems}. ${adLine}`;
   location.href = 'https://wa.me/919442666986?text=' + encodeURIComponent(text);
 }
 

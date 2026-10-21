@@ -80,25 +80,14 @@ src="https://www.facebook.com/tr?id=1421919389379591&ev=PageView&noscript=1"
 
   <section class="audit-card" aria-live="polite">
     <div id="formView">
-      <div class="progress-head">
-        <span id="stepLabel">Step 1 of 2 · About you</span>
-        <span id="stepPct">50%</span>
-      </div>
-      <div class="bar"><i id="bar"></i></div>
-
       <form id="lpForm" novalidate>
 
-        <fieldset class="step active" data-title="About you">
-          <h2 class="step-title">Let's start with you</h2>
-          <p class="hint">So we know who we're talking to.</p>
+        <fieldset class="step active" data-title="Your details">
+          <h2 class="step-title">Get your free website audit</h2>
+          <p class="hint">Tell us about you and your business. Takes about a minute.</p>
           <div class="field"><label for="name">Full name</label><input id="name" name="name" autocomplete="name" placeholder="e.g. Priya Nair" required></div>
           <div class="field"><label for="business">Business name</label><input id="business" name="business" autocomplete="organization" placeholder="e.g. Coastal Stays" required></div>
           <div class="field"><label for="whatsapp">WhatsApp number</label><input id="whatsapp" name="whatsapp" type="tel" autocomplete="tel" placeholder="+91 98765 43210" required pattern="^\+?[0-9 \(\)\-]{8,18}$"><small>We'll send your booking confirmation and reminders here.</small></div>
-        </fieldset>
-
-        <fieldset class="step" data-title="Your business">
-          <h2 class="step-title">Tell us about your business</h2>
-          <p class="hint">A few quick answers so the audit is useful.</p>
           <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="email" placeholder="you@business.com" required></div>
           <div class="field"><label for="industry">Business industry</label>
             <select id="industry" name="industry" required>
@@ -117,7 +106,12 @@ src="https://www.facebook.com/tr?id=1421919389379591&ev=PageView&noscript=1"
             </div>
           </div>
           <div class="field" id="siteField" hidden><label for="site">Your website link <em class="opt">Optional</em></label><input id="site" name="site" placeholder="yourbusiness.com" autocomplete="url"></div>
-          <div class="field"><span class="label">What is your monthly ad spend budget?</span>
+          <div class="field"><span class="label">Do you need advertising to get more customers?</span>
+            <div class="chips" data-name="needAds" data-required>
+              <button type="button">Yes</button><button type="button">No</button>
+            </div>
+          </div>
+          <div class="field" id="adBudgetField" hidden><span class="label">What is your monthly ad spend budget?</span>
             <div class="chips" data-name="adBudget" data-required>
               <button type="button">Not sure yet</button><button type="button">Under ₹10,000</button><button type="button">₹10,000–20,000</button><button type="button">₹20,000–50,000</button><button type="button">₹50,000+</button>
             </div>
@@ -130,8 +124,8 @@ src="https://www.facebook.com/tr?id=1421919389379591&ev=PageView&noscript=1"
         <p class="form-error" id="formError" role="alert"></p>
 
         <div class="form-nav" id="formNav">
-          <button type="button" class="btn btn-outline" id="backBtn">Back</button>
-          <button type="button" class="btn" id="nextBtn">Continue</button>
+          <button type="button" class="btn btn-outline" id="backBtn" hidden>Back</button>
+          <button type="button" class="btn" id="nextBtn">Send my details</button>
         </div>
       </form>
 
@@ -150,6 +144,6 @@ src="https://www.facebook.com/tr?id=1421919389379591&ev=PageView&noscript=1"
   </section>
 </main>
 
-<script defer src="/js/lp-form.js?v=0e124473"></script>
+<script defer src="/js/lp-form.js?v=a0f3bc96"></script>
 </body>
 </html>
