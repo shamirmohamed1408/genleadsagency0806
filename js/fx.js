@@ -47,6 +47,10 @@
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     if (!input.checkValidity() || !input.value.trim()) { msg.textContent = 'Enter a valid email address.'; input.focus(); return; }
+    const email = input.value.trim();
+    // Save the signup to the CRM too (fire and forget; WhatsApp still opens)
+    fetch('https://n8n.genleadsagency.com/webhook/genleads-website-audit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, keepalive: true,
+      body: JSON.stringify({ name: email, email, business: '', whatsapp: '', industry: '', problems: [], hasWebsite: '', site: '', adBudget: '', qualified: false, source: 'genleadsagency.com' + location.pathname, submittedAt: new Date().toISOString() }) }).catch(() => {});
     const text = encodeURIComponent(`Hi GenLeads, please add me to your updates: ${input.value.trim()}`);
     window.open(`https://wa.me/919442666986?text=${text}`, '_blank', 'noopener');
     msg.textContent = 'Opening WhatsApp to confirm your signup.';

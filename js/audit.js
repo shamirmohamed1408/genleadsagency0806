@@ -1,5 +1,5 @@
 // Free audit, page 1 of 2: qualifying form. On submit the answers go to n8n and the visitor moves to /book.
-const WEBHOOK_URL = ''; // n8n webhook: receives every qualified lead as JSON
+const WEBHOOK_URL = 'https://n8n.genleadsagency.com/webhook/genleads-website-audit'; // n8n webhook: receives every submission as JSON
 
 const form = document.getElementById('auditForm');
 const steps = [...form.querySelectorAll('fieldset.step')];
