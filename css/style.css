@@ -90,7 +90,7 @@ h1 em, h2 em { color: var(--emerald); }
 .pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--mint); position: relative; }
 .pulse::after { content: ""; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid var(--mint); animation: ping 1.8s var(--ease) infinite; }
 @keyframes ping { from { transform: scale(.6); opacity: 1; } to { transform: scale(2); opacity: 0; } }
-.hero h1 em { display: block; background: linear-gradient(100deg, var(--mint), #B8F5D6 50%, var(--mint)); -webkit-background-clip: text; background-clip: text; color: transparent; padding-right: .1em; }
+.hero h1 em { display: block; background: linear-gradient(100deg, var(--mint), #B8F5D6 50%, var(--mint)); -webkit-background-clip: text; background-clip: text; color: transparent; padding-right: .1em; padding-bottom: .14em; }
 .hero .lead { margin-top: 28px; }
 .channels { display: flex; align-items: center; gap: 18px; margin-top: 48px; flex-wrap: wrap; font-size: 13px; color: var(--on-dark-muted); }
 .channels ul { list-style: none; padding: 0; margin: 0; display: flex; gap: 8px; flex-wrap: wrap; }
@@ -357,7 +357,7 @@ main, .footer { position: relative; }
 
 /* Rotating hero word */
 .hero h1 .h1-static { display: block; }
-.rotator { display: grid; overflow: hidden; padding-bottom: .12em; }
+.rotator { display: grid; overflow: hidden; padding-bottom: .04em; }
 .rotator > * { grid-area: 1 / 1; }
 .rot-sizer { visibility: hidden; font-family: var(--serif); font-style: italic; font-weight: 400; }
 .rot { display: block; opacity: 0; transform: translateY(100%); transition: transform .9s var(--ease), opacity .6s; white-space: nowrap; }
